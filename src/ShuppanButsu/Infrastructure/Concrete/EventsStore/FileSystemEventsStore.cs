@@ -12,7 +12,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
     /// <summary>
     /// Primitive implementation of an event store that store events in file system.
     /// </summary>
-    public class FileSystemEventsStore  : IEventsStore, IDisposable
+    public class FileSystemEventsStore : IEventsStore, IDisposable
     {
         private String _baseDirectory;
         FileStream _lockFilestream;
@@ -22,7 +22,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         JsonSerializerSettings serializerSettings;
 
-        public FileSystemEventsStore(String baseDirectory) 
+        public FileSystemEventsStore(String baseDirectory)
         {
             _baseDirectory = baseDirectory;
             //TODO: Try to understand if the directory is locked by someone else and do a graceful error message
@@ -100,7 +100,16 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         /// <returns></returns>
         public IEnumerable<Event> GetByCorrelationId(string correlationId)
         {
-            throw new NotImplementedException();
+            String correlationFileName = GetCorrelationFileName(correlationId);
+            using (FileStream fs2 = File.Open(correlationFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (BinaryReader br2 = new BinaryReader(fs2))
+            {
+                while (br2.BaseStream.Position < br2.BaseStream.Length)
+                {
+                    String serialized = br2.ReadString();
+                    yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
+                }
+            }
         }
 
         public IEnumerable<Event> GetByTimestampRange(DateTime? start, DateTime? end)
@@ -119,7 +128,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             using (FileStream fs = File.Open(commitIdFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             using (BinaryReader br = new BinaryReader(fs))
             {
-                while (br.BaseStream.Position < br.BaseStream.Length) 
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
                     Int64 pos = br.ReadInt64();
                     String correlationId = br.ReadString();
@@ -143,14 +152,14 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         }
     }
 
-    public class Index 
+    public class Index
     {
 
         public Int64 PositionInStream { get; private set; }
 
         public String CorrelationId { get; private set; }
 
-        public Index(Int64 positionInStream, String correlationId) 
+        public Index(Int64 positionInStream, String correlationId)
         {
             PositionInStream = positionInStream;
             CorrelationId = correlationId;

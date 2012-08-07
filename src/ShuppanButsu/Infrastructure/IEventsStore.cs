@@ -68,15 +68,29 @@ namespace ShuppanButsu.Infrastructure
         /// </summary>
         public String CorrelationId { get; set; }
 
+        public Event() 
+        { 
+        
+        }
+
         /// <summary>
         /// Simple Event for a domain that does not want any payload.
         /// </summary>
         /// <param name="payload"></param>
-        public Event(Object payload) 
+        public Event(Object payload) : this (payload, string.Empty) 
+        {
+   
+        }
+
+        /// <summary>
+        /// Simple Event for a domain that does not want any payload.
+        /// </summary>
+        /// <param name="payload"></param>
+        public Event(Object payload, String correlationId)
         {
             Timestamp = DateTime.Now.Ticks;
             Payload = payload;
-            CorrelationId = String.Empty;
+            CorrelationId = correlationId;
         }
     }
 }
