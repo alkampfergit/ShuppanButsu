@@ -1,4 +1,4 @@
-Thanks for downloading this Castle Windsor package.
+iThanks for downloading this Castle Windsor package.
 You can find full list of changes in changes.txt
 
 Documentation:		- http://docs.castleproject.org/Windsor.MainPage.ashx
