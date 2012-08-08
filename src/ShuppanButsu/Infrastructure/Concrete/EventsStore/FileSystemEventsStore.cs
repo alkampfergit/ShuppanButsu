@@ -19,7 +19,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         String _commitIdFolder;
         String _eventFolder;
-
+        
         JsonSerializerSettings serializerSettings;
 
         public FileSystemEventsStore(String baseDirectory)
@@ -83,6 +83,8 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             }
         }
 
+        #region FileNameHandling
+
         private string GetCorrelationFileName(String correlationId)
         {
             return Path.ChangeExtension(Path.Combine(_eventFolder, correlationId), ".events");
@@ -92,6 +94,8 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         {
             return Path.ChangeExtension(Path.Combine(_commitIdFolder, commitId.ToString("N")), ".commit");
         }
+
+        #endregion
 
         /// <summary>
         /// 

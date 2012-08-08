@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\AggregateRoot.cs" />
+    <Compile Include="Domain\IAggregateRoot.cs" />
     <Compile Include="Infrastructure\BoundedContext.cs" />
     <Compile Include="Infrastructure\Command.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventsStore.cs" />
@@ -66,9 +68,7 @@
     <Compile Include="Infrastructure\IEventsStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Domain\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
