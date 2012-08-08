@@ -49,8 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRootFixture.cs" />
+    <Compile Include="Domain\TestClasses\TestClassesBasic.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventStoreFixtures\FileSystemEventsStoreBasicFunctionalitiesFixture.cs" />
+    <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventStoreFixtures\RepositoryFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\InMemoryEventsStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

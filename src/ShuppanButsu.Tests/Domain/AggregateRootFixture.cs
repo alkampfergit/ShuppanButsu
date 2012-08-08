@@ -7,6 +7,7 @@ using ShuppanButsu.Domain;
 using ShuppanButsu.Infrastructure;
 using Xunit;
 using SharpTestsEx;
+using ShuppanButsu.Tests.Domain.TestClasses;
 
 namespace ShuppanButsu.Tests.Domain
 {
@@ -46,34 +47,5 @@ namespace ShuppanButsu.Tests.Domain
         }
     }
 
-    class TestClassForAggregateRoot : AggregateRoot
-    {
 
-        public Int32 IntProperty;
-        public String StringProperty;
-
-        private void Apply(TestClassForAggregateRootCreated @event)
-        {
-            Id = @event.Id;
-            IntProperty = @event.IntProperty;
-            StringProperty = @event.StringProperty;
-        }
-
-        public  TestClassForAggregateRoot() 
-        { 
-            RaiseEvent(new TestClassForAggregateRootCreated() { 
-                Id = Guid.NewGuid(),
-                IntProperty = 0,
-                StringProperty = "0",
-            });
-        }
-
-    }
-
-    class TestClassForAggregateRootCreated : DomainEvent
-    {
-        public Guid Id { get; set; }
-        public Int32 IntProperty { get; set; }
-        public String StringProperty { get; set; }
-    }
 }

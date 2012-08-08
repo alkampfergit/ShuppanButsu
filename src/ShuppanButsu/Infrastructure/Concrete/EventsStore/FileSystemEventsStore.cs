@@ -48,7 +48,6 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         public void PersistEvents(IEnumerable<Event> domainEvents, Guid commitId)
         {
-            if (domainEvents.Any(de => de.Timestamp == 0)) throw new ArgumentException("No events with null timestamp are allowed to be persisted");
 
             //Need to persist events with a given commitId, 
             String commitIdFile = GetCommitIdFile(commitId);
@@ -114,16 +113,6 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                     yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
                 }
             }
-        }
-
-        public IEnumerable<Event> GetByTimestampRange(DateTime? start, DateTime? end)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Event> GetByTimestampRange(long? start, DateTime? end)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<Event> GetByCommitId(Guid commitId)

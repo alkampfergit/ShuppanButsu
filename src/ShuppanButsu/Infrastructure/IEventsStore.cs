@@ -27,22 +27,6 @@ namespace ShuppanButsu.Infrastructure
         IEnumerable<Event> GetByCorrelationId(String correlationId);
 
         /// <summary>
-        /// Retrieve all events between two distinct date.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
-        IEnumerable<Event> GetByTimestampRange(DateTime? start, DateTime? end);
-
-        /// <summary>
-        /// Same of <see cref="GetByTimestampRange(DateTime?, DateTime?)"/> but this one accepts ticks
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
-        IEnumerable<Event> GetByTimestampRange(Int64? start, DateTime? end);
-
-        /// <summary>
         /// Gets the events related to that commit id
         /// </summary>
         /// <param name="commitId"></param>
@@ -52,11 +36,6 @@ namespace ShuppanButsu.Infrastructure
 
     public class Event 
     {
-        /// <summary>
-        /// DateTime express as tick.
-        /// </summary>
-        public Int64 Timestamp { get; set; }
-
         /// <summary>
         /// Payload of the event, it can be the <see cref="DomainEvent"/> real object stored in the event.
         /// </summary>
@@ -74,7 +53,7 @@ namespace ShuppanButsu.Infrastructure
         }
 
         /// <summary>
-        /// Simple Event for a domain that does not want any payload.
+        /// Simple Event for a domain that does not want any corrleationId
         /// </summary>
         /// <param name="payload"></param>
         public Event(Object payload) : this (payload, string.Empty) 
@@ -83,12 +62,11 @@ namespace ShuppanButsu.Infrastructure
         }
 
         /// <summary>
-        /// Simple Event for a domain that does not want any payload.
+        /// 
         /// </summary>
         /// <param name="payload"></param>
         public Event(Object payload, String correlationId)
         {
-            Timestamp = DateTime.Now.Ticks;
             Payload = payload;
             CorrelationId = correlationId;
         }
