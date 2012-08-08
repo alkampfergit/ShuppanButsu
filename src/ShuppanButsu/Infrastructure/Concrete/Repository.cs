@@ -31,6 +31,7 @@ namespace ShuppanButsu.Infrastructure
             T aggregateRoot = new T();
             //A call to clear raised events is needed if the class implement raising events in default constructor
             ((IAggregateRoot)aggregateRoot).ClearRaisedEvents();
+
             var commits = _eventStore.GetByCorrelationId(id.ToString());
             foreach (var commit in commits)
             {
@@ -39,12 +40,19 @@ namespace ShuppanButsu.Infrastructure
             return aggregateRoot;
         }
 
-        public void Save(IAggregateRoot aggregateRoot, Guid commitId) 
+        /// <summary>
+        /// Save an entity in an event store, it actually saves all the uncommitted events and returns
+        /// the list of saved events.
+        /// </summary>
+        /// <param name="aggregateRoot"></param>
+        /// <param name="commitId"></param>
+        public IEnumerable<DomainEvent> Save(IAggregateRoot aggregateRoot, Guid commitId) 
         { 
             var uncommittedEvents = aggregateRoot.GetRaisedEvents();
             _eventStore.PersistEvents(
                 uncommittedEvents.Select(evt => new Event(evt, aggregateRoot.Id.ToString())), commitId);
             aggregateRoot.ClearRaisedEvents();
+            return uncommittedEvents;
             
         }
 

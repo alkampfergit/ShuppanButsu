@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRoot.cs" />
+    <Compile Include="Domain\Blog\Comment.cs" />
+    <Compile Include="Domain\Blog\Post.cs" />
     <Compile Include="Domain\IAggregateRoot.cs" />
     <Compile Include="Infrastructure\BoundedContext.cs" />
     <Compile Include="Infrastructure\Command.cs" />
