@@ -64,9 +64,12 @@
     <Compile Include="Domain\Blog\Post.cs" />
     <Compile Include="Domain\IAggregateRoot.cs" />
     <Compile Include="Infrastructure\BoundedContext.cs" />
+    <Compile Include="Infrastructure\Concrete\CastleFasterflectCatalog.cs" />
     <Compile Include="Infrastructure\Command.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventsStore.cs" />
     <Compile Include="Infrastructure\DomainEvent.cs" />
+    <Compile Include="Infrastructure\ICommand.cs" />
+    <Compile Include="Infrastructure\CatalogInterfaces.cs" />
     <Compile Include="Infrastructure\IEventsStore.cs" />
     <Compile Include="Infrastructure\Concrete\Repository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
