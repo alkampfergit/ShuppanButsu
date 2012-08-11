@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,9 +19,13 @@ namespace ShuppanButsu.Domain.Blog
 
         public static Post CreatePost(AggregateRootFactory factory, String title, String textContent) 
         { 
-
             //Slug is created replacing any non number or letter char with a dash
-            StringBuilder slug = title.Aggregate(new StringBuilder(), (sb, c) => Char.IsLetterOrDigit(c) ? sb.Append(c) : sb.Append("-"));
+            //accents are removed
+            String normalizedTitle = title.Normalize(NormalizationForm.FormD);
+            StringBuilder slug = normalizedTitle
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .Select(Char.ToLower)
+                .Aggregate(new StringBuilder(), (sb, c) => Char.IsLetterOrDigit(c) ? sb.Append(c) : sb.Append("-"));
             var evt = new PostCreated(title, textContent, slug.ToString());
             return factory.Create<Post>(evt);
         }

@@ -67,6 +67,12 @@ namespace ShuppanButsu.Tests
             return fixture.GetFromTestContext<List<DomainEvent>>(InterceptDomainEventsHelper.InterceptorListKey);
         }
 
+        public static T GetFirstDomainEvent<T>(this BaseTestFixtureWithHelper fixture) {
+            return fixture.GetEventsRaisedDuringCurrentTest()
+                .OfType<T>()
+                .First();
+        }
+
         public static AggregateRootFactory AggregateRootFactory(this BaseTestFixtureWithHelper fixture)
         {
             return fixture.GetFromTestContext<AggregateRootFactory>(InterceptDomainEventsHelper.FactoryKey);
