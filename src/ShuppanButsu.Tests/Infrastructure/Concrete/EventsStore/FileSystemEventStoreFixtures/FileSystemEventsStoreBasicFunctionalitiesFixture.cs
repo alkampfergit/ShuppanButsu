@@ -120,6 +120,16 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
             reloaded.Select(e => ((SamplePayload)e.Payload).DoubleProperty)
                 .Should().Have.SameSequenceAs(new double[] {1, 2, 3, 4 });
         }
+
+        [Fact]
+        public void verify_cannot_save_more_than_one_commitid() 
+        {
+            SamplePayload aPayload = new SamplePayload() { DoubleProperty = 10.34, StringProperty = "This is a test" };
+            Event evt = new Event(aPayload);
+            Guid commitId = Guid.NewGuid();
+            sut.PersistEvents(new Event[] { evt }, commitId);
+            (new Action(() => sut.PersistEvents(new Event[] { evt }, commitId))).Should().Throw();
+        }
     }
 
     public class SamplePayload 

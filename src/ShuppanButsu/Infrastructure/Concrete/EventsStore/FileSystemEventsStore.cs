@@ -56,7 +56,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
             //Need to persist events with a given commitId, 
             String commitIdFile = GetCommitIdFile(commitId);
-
+            if (File.Exists(commitIdFile)) throw new ArgumentException("Another commit was present with the same commitId", "commitId");
             var indexes = new List<Index>();
 
             //now write all the streams and the relative position in files

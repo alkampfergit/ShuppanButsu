@@ -8,6 +8,11 @@ namespace ShuppanButsu.Infrastructure
 {
     public class DomainEvent
     {
+        public DateTime Timestamp { get; private set; }
 
+        public DomainEvent() 
+        {
+            Timestamp = DateTime.Now;
+        }
     }
 }

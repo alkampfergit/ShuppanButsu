@@ -47,13 +47,13 @@ namespace ShuppanButsu.Infrastructure
         /// <summary>
         /// Payload of the event, it can be the <see cref="DomainEvent"/> real object stored in the event.
         /// </summary>
-        public Object Payload { get; set; }
+        public Object Payload { get; private set; }
 
         /// <summary>
         /// Events are stored as a continuous sequence of events, we can retrieve them searching for this 
         /// specific field and nothing else.
         /// </summary>
-        public String CorrelationId { get; set; }
+        public String CorrelationId { get; private set; }
 
         /// <summary>
         /// It Contains the tick id extracted by the datetime
@@ -79,10 +79,20 @@ namespace ShuppanButsu.Infrastructure
         /// </summary>
         /// <param name="payload"></param>
         public Event(Object payload, String correlationId)
+            : this(payload, correlationId, DateTime.Now.Ticks) 
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="payload"></param>
+        public Event(Object payload, String correlationId, Int64 tickId)
         {
             Payload = payload;
             CorrelationId = correlationId;
-            TickId = DateTime.Now.Ticks;
+            TickId = tickId;
         }
     }
 }

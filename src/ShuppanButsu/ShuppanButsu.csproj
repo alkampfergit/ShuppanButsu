@@ -66,12 +66,17 @@
     <Compile Include="Infrastructure\BoundedContext.cs" />
     <Compile Include="Infrastructure\Concrete\CastleFasterflectCatalog.cs" />
     <Compile Include="Infrastructure\Command.cs" />
+    <Compile Include="Infrastructure\Concrete\CommandDispatcher.cs" />
+    <Compile Include="Infrastructure\Concrete\DomainEventDispatcher.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventsStore.cs" />
+    <Compile Include="Infrastructure\Concrete\UnitOfWork.cs" />
     <Compile Include="Infrastructure\DomainEvent.cs" />
     <Compile Include="Infrastructure\ICommand.cs" />
     <Compile Include="Infrastructure\CatalogInterfaces.cs" />
+    <Compile Include="Infrastructure\IDispatchers.cs" />
     <Compile Include="Infrastructure\IEventsStore.cs" />
     <Compile Include="Infrastructure\Concrete\Repository.cs" />
+    <Compile Include="Infrastructure\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

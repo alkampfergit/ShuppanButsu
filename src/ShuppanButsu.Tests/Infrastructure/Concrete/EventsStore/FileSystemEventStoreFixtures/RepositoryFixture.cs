@@ -8,23 +8,25 @@ using ShuppanButsu.Tests.Domain.TestClasses;
 using ShuppanButsu.Tests.Utils;
 using Xunit;
 using SharpTestsEx;
+using ShuppanButsu.Infrastructure.Concrete;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete
 {
-    public class RepositoryFixture
+    public class UnitOfWorkFixture
     {
-        Repository sut;
+        UnitOfWork sut;
 
-        public RepositoryFixture()
+        public UnitOfWorkFixture()
         {
-            sut = new Repository(new InMemoryEventsStore());
+            sut = new UnitOfWork(new InMemoryEventsStore());
         }
 
         [Fact]
         public void verify_base_save_and_load() 
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
-            sut.Save(entity, Guid.NewGuid());
+            sut.Save(entity);
+            sut.Commit(Guid.NewGuid());
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.Id.Should().Be.EqualTo(entity.Id);
         }
@@ -34,9 +36,10 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
             entity.Increment(10);
-            sut.Save(entity, Guid.NewGuid());
+            sut.Save(entity);
+            sut.Commit(Guid.NewGuid());
             entity.Increment(32);
-            sut.Save(entity, Guid.NewGuid());
+            sut.Commit(Guid.NewGuid());
 
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.IntProperty.Should().Be.EqualTo(42);
@@ -47,10 +50,11 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
             entity.Increment(10);
-            sut.Save(entity, Guid.NewGuid());
+            sut.Save(entity);
+            sut.Commit(Guid.NewGuid());
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.Increment(32);
-            sut.Save(loaded, Guid.NewGuid());
+            sut.Commit(Guid.NewGuid());
 
             var reloaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             reloaded.IntProperty.Should().Be.EqualTo(42);
@@ -60,7 +64,8 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         public void verify_get_back_whole_stream_of_events()
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
-            sut.Save(entity, Guid.NewGuid());
+            sut.Save(entity);
+            sut.Commit(Guid.NewGuid());
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.Id.Should().Be.EqualTo(entity.Id);
         }

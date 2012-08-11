@@ -114,9 +114,9 @@ namespace ShuppanButsu.Infrastructure
             DefiningType = definingType;
         }
 
-        public void Invoke(ICommand @event)
+        public void Invoke(ICommand command)
         {
-            Invoker.Invoke(@event);
+            Invoker.Invoke(command);
         }
     }
 }
