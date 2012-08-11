@@ -19,12 +19,15 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         String _commitIdFolder;
         String _eventFolder;
-        
+        String _eventStreamFileName;
+
         JsonSerializerSettings serializerSettings;
 
         public FileSystemEventsStore(String baseDirectory)
         {
             _baseDirectory = baseDirectory;
+            if (!Directory.Exists(_baseDirectory)) Directory.CreateDirectory(_baseDirectory);
+
             //TODO: Try to understand if the directory is locked by someone else and do a graceful error message
             _lockFilestream = File.Open(GetLockFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             StreamWriter wr = new StreamWriter(_lockFilestream);
@@ -36,6 +39,8 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
             _eventFolder = Path.Combine(baseDirectory, "Events");
             if (!Directory.Exists(_eventFolder)) Directory.CreateDirectory(_eventFolder);
+
+            _eventStreamFileName = Path.Combine(baseDirectory, "events.stream");
 
             serializerSettings = new JsonSerializerSettings();
             serializerSettings.TypeNameHandling = TypeNameHandling.Auto;
@@ -52,32 +57,42 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             //Need to persist events with a given commitId, 
             String commitIdFile = GetCommitIdFile(commitId);
 
-            //now write all the streams and the relative position in files
             var indexes = new List<Index>();
 
-            foreach (var @event in domainEvents)
+            //now write all the streams and the relative position in files
+            using (FileStream fs = File.Open(_eventStreamFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (BinaryWriter sw = new BinaryWriter(fs))
             {
-                String correlationId = String.IsNullOrWhiteSpace(@event.CorrelationId) ? "null" : @event.CorrelationId;
-                String correlationFileName = GetCorrelationFileName(correlationId);
-                String serialized = JsonConvert.SerializeObject(@event, serializerSettings);
-                using (FileStream fs = File.Open(correlationFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                using (BinaryWriter sw = new BinaryWriter(fs))
+                foreach (var @event in domainEvents)
                 {
+                    String correlationId = String.IsNullOrWhiteSpace(@event.CorrelationId) ? "null" : @event.CorrelationId;
+
+                    String serialized = JsonConvert.SerializeObject(@event, serializerSettings);
+
                     fs.Seek(0, SeekOrigin.End);
+                    //store index information
                     indexes.Add(new Index(fs.Position, correlationId));
-                    //sw.Write(serialized.Length);
+
                     sw.Write(serialized);
                 }
             }
 
+            //Write all information about the index in a file with the name of the correlation id
             using (FileStream fs = File.Open(commitIdFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             using (BinaryWriter sw = new BinaryWriter(fs))
             {
                 foreach (var index in indexes)
                 {
                     sw.Write(index.PositionInStream);
-                    //sw.Write(index.CorrelationId.Length);
-                    sw.Write(index.CorrelationId);
+
+                    //write information about the index in the correlation file index
+                    String correlationFileName = GetCorrelationFileName(index.CorrelationId);
+                    using (FileStream fscorr = File.Open(correlationFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+                    using (BinaryWriter swcorr = new BinaryWriter(fscorr))
+                    {
+                        fscorr.Seek(0, SeekOrigin.End);
+                        swcorr.Write(index.PositionInStream);
+                    }
                 }
             }
         }
@@ -104,11 +119,15 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         public IEnumerable<Event> GetByCorrelationId(string correlationId)
         {
             String correlationFileName = GetCorrelationFileName(correlationId);
-            using (FileStream fs2 = File.Open(correlationFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(correlationFileName)))
+            using (BinaryReader br = new BinaryReader(ms))
+            using (FileStream fs2 = File.Open(_eventStreamFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             using (BinaryReader br2 = new BinaryReader(fs2))
             {
-                while (br2.BaseStream.Position < br2.BaseStream.Length)
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
+                    Int64 index = br.ReadInt64();
+                    fs2.Seek(index, SeekOrigin.Begin);
                     String serialized = br2.ReadString();
                     yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
                 }
@@ -118,21 +137,18 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         public IEnumerable<Event> GetByCommitId(Guid commitId)
         {
             String commitIdFile = GetCommitIdFile(commitId);
-            using (FileStream fs = File.Open(commitIdFile, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            using (BinaryReader br = new BinaryReader(fs))
+
+            using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(commitIdFile)))
+            using (BinaryReader br = new BinaryReader(ms))
+            using (FileStream fs2 = File.Open(_eventStreamFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (BinaryReader br2 = new BinaryReader(fs2))
             {
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    Int64 pos = br.ReadInt64();
-                    String correlationId = br.ReadString();
-                    String correlationFileName = GetCorrelationFileName(correlationId);
-                    using (FileStream fs2 = File.Open(correlationFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                    using (BinaryReader br2 = new BinaryReader(fs2))
-                    {
-                        fs2.Seek(pos, SeekOrigin.Begin);
-                        String serialized = br2.ReadString();
-                        yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
-                    }
+                    Int64 index = br.ReadInt64();
+                    fs2.Seek(index, SeekOrigin.Begin);
+                    String serialized = br2.ReadString();
+                    yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
                 }
             }
         }
@@ -142,6 +158,21 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             _lockFilestream.Close();
             File.Delete(GetLockFileName());
 
+        }
+
+
+        public IEnumerable<Event> GetRange(long tickFrom, long tickTo)
+        {
+            using (FileStream fs = File.Open(_eventStreamFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                fs.Seek(0, SeekOrigin.Begin);
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    String serialized = br.ReadString();
+                    yield return JsonConvert.DeserializeObject<Event>(serialized, serializerSettings);
+                }
+            }
         }
     }
 

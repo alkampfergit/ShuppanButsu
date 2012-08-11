@@ -10,19 +10,22 @@ using SharpTestsEx;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEventStoreFixtures
 {
-    public class FileSystemEventsStoreBasicFunctionalitiesFixture : IDisposable
+    public abstract class BaseEventStoreFixture : IDisposable
     {
 
-        FileSystemEventsStore sut;
+        IEventsStore sut;
 
-        public FileSystemEventsStoreBasicFunctionalitiesFixture() 
+        public BaseEventStoreFixture() 
         {
-            sut = new FileSystemEventsStore("c:\\temp");
+            sut = GenerateSut();
         }
+
+        protected abstract IEventsStore GenerateSut();
+      
 
         public void Dispose() 
         {
-            sut.Dispose();
+            if (sut is IDisposable) ((IDisposable) sut).Dispose();
         }
 
         [Fact]
@@ -92,6 +95,31 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
             loadedPayload.StringProperty.Should().Be.EqualTo(aPayload.StringProperty);
             loadedPayload.DoubleProperty.Should().Be.EqualTo(aPayload.DoubleProperty);
         }
+
+        [Fact]
+        public void verify_reload_of_all_events_ordered()
+        {
+            SamplePayload aPayload = new SamplePayload() { DoubleProperty = 1 };
+            SamplePayload anotherPayload = new SamplePayload() { DoubleProperty = 2 };
+            Event evt = new Event(aPayload);
+            Event anotherEvt = new Event(anotherPayload);
+            Guid commitId = Guid.NewGuid();
+            sut.PersistEvents(new Event[] { evt, anotherEvt }, commitId);
+
+
+             aPayload = new SamplePayload() { DoubleProperty = 3 };
+             anotherPayload = new SamplePayload() { DoubleProperty = 4 };
+             evt = new Event(aPayload);
+             anotherEvt = new Event(anotherPayload);
+             commitId = Guid.NewGuid();
+            sut.PersistEvents(new Event[] { evt, anotherEvt }, commitId);
+
+
+            var reloaded = sut.GetRange(0L, Int64.MaxValue);
+            reloaded.Should().Have.Count.EqualTo(4);
+            reloaded.Select(e => ((SamplePayload)e.Payload).DoubleProperty)
+                .Should().Have.SameSequenceAs(new double[] {1, 2, 3, 4 });
+        }
     }
 
     public class SamplePayload 
@@ -100,5 +128,16 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
         public String StringProperty { get; set; }
 
         public Double DoubleProperty { get; set; }
+    }
+
+    public class FileSystemEventsStoreFixture : BaseEventStoreFixture 
+    {
+        protected override IEventsStore GenerateSut()
+        {
+            
+            Console.WriteLine("FileSystemEventsStoreFixture");
+            System.IO.Directory.Delete("c:\\temp\\testevents", true);
+            return new FileSystemEventsStore("c:\\temp\\testevents");
+        }
     }
 }

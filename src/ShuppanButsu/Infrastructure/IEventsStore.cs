@@ -32,6 +32,14 @@ namespace ShuppanButsu.Infrastructure
         /// <param name="commitId"></param>
         /// <returns></returns>
         IEnumerable<Event> GetByCommitId(Guid commitId);
+
+        /// <summary>
+        /// Retrieve a stream of events that are comprised between two ticks.
+        /// </summary>
+        /// <param name="tickFrom"></param>
+        /// <param name="tickTo"></param>
+        /// <returns></returns>
+        IEnumerable<Event> GetRange(Int64 tickFrom, Int64 tickTo);
     }
 
     public class Event 
@@ -47,7 +55,12 @@ namespace ShuppanButsu.Infrastructure
         /// </summary>
         public String CorrelationId { get; set; }
 
-        public Event() 
+        /// <summary>
+        /// It Contains the tick id extracted by the datetime
+        /// </summary>
+        public Int64 TickId { get; private set; }
+
+        public Event() : this (null, String.Empty)
         { 
         
         }
@@ -69,6 +82,7 @@ namespace ShuppanButsu.Infrastructure
         {
             Payload = payload;
             CorrelationId = correlationId;
+            TickId = DateTime.Now.Ticks;
         }
     }
 }

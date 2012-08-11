@@ -55,5 +55,14 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
             var reloaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             reloaded.IntProperty.Should().Be.EqualTo(42);
         }
+
+        [Fact]
+        public void verify_get_back_whole_stream_of_events()
+        {
+            TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
+            sut.Save(entity, Guid.NewGuid());
+            var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
+            loaded.Id.Should().Be.EqualTo(entity.Id);
+        }
     }
 }

@@ -50,5 +50,11 @@ namespace ShuppanButsu.Tests.Utils
                     yield return slot.Event;
             }
         }
+
+
+        public IEnumerable<Event> GetRange(long tickFrom, long tickTo)
+        {
+            return _events.Select(e => e.Event);
+        }
     }
 }
