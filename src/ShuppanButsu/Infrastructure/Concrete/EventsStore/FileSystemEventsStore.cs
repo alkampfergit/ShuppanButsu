@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ShuppanButsu.Utils.JsonNet;
 
 namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 {
@@ -44,6 +45,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
             serializerSettings = new JsonSerializerSettings();
             serializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+            serializerSettings.ContractResolver = new CustomContractResolver();
         }
 
         private string GetLockFileName()

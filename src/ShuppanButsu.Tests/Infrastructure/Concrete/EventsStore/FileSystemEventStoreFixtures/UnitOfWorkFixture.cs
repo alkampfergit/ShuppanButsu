@@ -32,17 +32,19 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         }
 
         [Fact]
-        public void verify_double_save_does_not_duplicate_events() 
+        public void verify_commit_will_now_modify_aggregateRoots_after_previous_commit_without_explicit_load() 
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
             entity.Increment(10);
             sut.Save(entity);
             sut.Commit(Guid.NewGuid());
+
+            //Now increment the entity, but the old unit of work was committed, this entity should not tracked anymore
             entity.Increment(32);
             sut.Commit(Guid.NewGuid());
 
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
-            loaded.IntProperty.Should().Be.EqualTo(42);
+            loaded.IntProperty.Should().Be.EqualTo(10);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         public void verify_get_back_whole_stream_of_events()
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
-            sut.Save(entity);
+                        sut.Save(entity);
             sut.Commit(Guid.NewGuid());
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.Id.Should().Be.EqualTo(entity.Id);

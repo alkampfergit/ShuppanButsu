@@ -15,23 +15,23 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
 
         IEventsStore sut;
 
-        public BaseEventStoreFixture() 
+        public BaseEventStoreFixture()
         {
             sut = GenerateSut();
         }
 
         protected abstract IEventsStore GenerateSut();
-      
 
-        public void Dispose() 
+
+        public void Dispose()
         {
-            if (sut is IDisposable) ((IDisposable) sut).Dispose();
+            if (sut is IDisposable) ((IDisposable)sut).Dispose();
         }
 
         [Fact]
-        public void verify_smoke_save_of_a_single_event() 
-        { 
-            SamplePayload aPayload = new SamplePayload() {DoubleProperty = 10.34, StringProperty = "This is a test"};
+        public void verify_smoke_save_of_a_single_event()
+        {
+            SamplePayload aPayload = new SamplePayload() { DoubleProperty = 10.34, StringProperty = "This is a test" };
             Event evt = new Event(aPayload);
             sut.PersistEvents(new Event[] { evt }, Guid.NewGuid());
         }
@@ -40,17 +40,31 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
         public void verify_save_of_a_single_event()
         {
             SamplePayload aPayload = new SamplePayload() { DoubleProperty = 10.34, StringProperty = "This is a test" };
-            Event evt = new Event(aPayload);
+            Event evt = new Event(aPayload, "CorrelationTest");
             Guid commitId = Guid.NewGuid();
-            sut.PersistEvents(new Event[] { evt },commitId);
+            sut.PersistEvents(new Event[] { evt }, commitId);
 
             var commit = sut.GetByCommitId(commitId).ToList();
             commit.Should().Have.Count.EqualTo(1);
             var loadedEvt = commit.Single();
             loadedEvt.Payload.Should().Be.OfType<SamplePayload>();
-            SamplePayload loadedPayload = (SamplePayload) loadedEvt.Payload;
+            SamplePayload loadedPayload = (SamplePayload)loadedEvt.Payload;
+            loadedEvt.TickId.Should().Be.EqualTo(evt.TickId);
+            loadedEvt.CorrelationId.Should().Be.EqualTo(evt.CorrelationId);
             loadedPayload.StringProperty.Should().Be.EqualTo(aPayload.StringProperty);
             loadedPayload.DoubleProperty.Should().Be.EqualTo(aPayload.DoubleProperty);
+        }
+
+        [Fact]
+        public void verify_save_of_Payload_with_private_setter_property()
+        {
+            SamplePayload aPayload = new SamplePayload(42);
+            Event evt = new Event(aPayload, "CorrelationTest");
+            Guid commitId = Guid.NewGuid();
+            sut.PersistEvents(new Event[] { evt }, commitId);
+
+            var commit = sut.GetByCommitId(commitId).ToList();
+            commit.Select(e => (SamplePayload)e.Payload).Single().PrivateSetterProperty.Should().Be.EqualTo(42);
         }
 
         [Fact]
@@ -79,7 +93,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
         }
 
         [Fact]
-        public void verify_reload_by_correlation_id() 
+        public void verify_reload_by_correlation_id()
         {
             SamplePayload aPayload = new SamplePayload() { DoubleProperty = 10.34, StringProperty = "This is a test" };
             var correlationId = Guid.NewGuid().ToString();
@@ -107,22 +121,22 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
             sut.PersistEvents(new Event[] { evt, anotherEvt }, commitId);
 
 
-             aPayload = new SamplePayload() { DoubleProperty = 3 };
-             anotherPayload = new SamplePayload() { DoubleProperty = 4 };
-             evt = new Event(aPayload);
-             anotherEvt = new Event(anotherPayload);
-             commitId = Guid.NewGuid();
+            aPayload = new SamplePayload() { DoubleProperty = 3 };
+            anotherPayload = new SamplePayload() { DoubleProperty = 4 };
+            evt = new Event(aPayload);
+            anotherEvt = new Event(anotherPayload);
+            commitId = Guid.NewGuid();
             sut.PersistEvents(new Event[] { evt, anotherEvt }, commitId);
 
 
             var reloaded = sut.GetRange(0L, Int64.MaxValue);
             reloaded.Should().Have.Count.EqualTo(4);
             reloaded.Select(e => ((SamplePayload)e.Payload).DoubleProperty)
-                .Should().Have.SameSequenceAs(new double[] {1, 2, 3, 4 });
+                .Should().Have.SameSequenceAs(new double[] { 1, 2, 3, 4 });
         }
 
         [Fact]
-        public void verify_cannot_save_more_than_one_commitid() 
+        public void verify_cannot_save_more_than_one_commitid()
         {
             SamplePayload aPayload = new SamplePayload() { DoubleProperty = 10.34, StringProperty = "This is a test" };
             Event evt = new Event(aPayload);
@@ -132,19 +146,28 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
         }
     }
 
-    public class SamplePayload 
+    public class SamplePayload
     {
 
         public String StringProperty { get; set; }
 
         public Double DoubleProperty { get; set; }
+
+        public Int32 PrivateSetterProperty { get; private set; }
+
+        public SamplePayload() { }
+
+        public SamplePayload(Int32 privateSetterProperty)
+        {
+            PrivateSetterProperty = privateSetterProperty;
+        }
     }
 
-    public class FileSystemEventsStoreFixture : BaseEventStoreFixture 
+    public class FileSystemEventsStoreFixture : BaseEventStoreFixture
     {
         protected override IEventsStore GenerateSut()
         {
-            
+
             Console.WriteLine("FileSystemEventsStoreFixture");
             System.IO.Directory.Delete("c:\\temp\\testevents", true);
             return new FileSystemEventsStore("c:\\temp\\testevents");

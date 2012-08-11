@@ -53,12 +53,12 @@ namespace ShuppanButsu.Infrastructure
         /// Events are stored as a continuous sequence of events, we can retrieve them searching for this 
         /// specific field and nothing else.
         /// </summary>
-        public String CorrelationId { get; private set; }
+        public String CorrelationId { get; set; }
 
         /// <summary>
         /// It Contains the tick id extracted by the datetime
         /// </summary>
-        public Int64 TickId { get; private set; }
+        public Int64 TickId { get; set; }
 
         public Event() : this (null, String.Empty)
         { 
