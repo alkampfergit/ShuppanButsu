@@ -52,6 +52,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,9 +60,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateRootFactory.cs" />
     <Compile Include="Domain\AggregateRoot.cs" />
     <Compile Include="Domain\Blog\Comment.cs" />
     <Compile Include="Domain\Blog\Post.cs" />
+    <Compile Include="Domain\Blog\PostEvents\PostCreated.cs" />
     <Compile Include="Domain\IAggregateRoot.cs" />
     <Compile Include="Infrastructure\BoundedContext.cs" />
     <Compile Include="Infrastructure\Concrete\CastleFasterflectCatalog.cs" />

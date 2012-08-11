@@ -10,10 +10,12 @@ namespace ShuppanButsu.Infrastructure.Concrete
     public class UnitOfWork
     {
         private IEventsStore _eventStore;
+        private IDomainEventDispatcher _domainEventDispatcher;
 
-        public UnitOfWork(IEventsStore eventsStore) 
+        public UnitOfWork(IEventsStore eventsStore, IDomainEventDispatcher domainEventDispatcher) 
         {
             _eventStore = eventsStore;
+            _domainEventDispatcher = domainEventDispatcher;
         }
 
         private Dictionary<Guid, AggregateRoot> _idMap = new Dictionary<Guid, AggregateRoot>();
@@ -73,12 +75,16 @@ namespace ShuppanButsu.Infrastructure.Concrete
                 ((IAggregateRoot)ar).ClearRaisedEvents();
             }
 
-            //TODO: Dispatch events.
+            var orderedEvents = eventsToStore.OrderBy(e => e.TickId).Select(e => (DomainEvent) e.Payload);
+            foreach (var @event in orderedEvents)
+            {
+                _domainEventDispatcher.DispatchEvent(@event);
+            }
 
             //Now clear the identity map
             _idMap.Clear();
 
-            return eventsToStore.OrderBy(e => e.TickId).Select(e => (DomainEvent) e.Payload);
+            return orderedEvents;
 
         }
     }

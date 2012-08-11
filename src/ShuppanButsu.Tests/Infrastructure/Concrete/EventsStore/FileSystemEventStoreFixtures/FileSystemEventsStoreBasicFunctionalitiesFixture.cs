@@ -167,10 +167,13 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.FileSystemEvent
     {
         protected override IEventsStore GenerateSut()
         {
-
             Console.WriteLine("FileSystemEventsStoreFixture");
-            System.IO.Directory.Delete("c:\\temp\\testevents", true);
-            return new FileSystemEventsStore("c:\\temp\\testevents");
+            var dirpath = "c:\\temp\\testevents";
+            if (System.IO.Directory.Exists(dirpath))
+            {
+                System.IO.Directory.Delete(dirpath, true);
+            }
+            return new FileSystemEventsStore(dirpath);
         }
     }
 }

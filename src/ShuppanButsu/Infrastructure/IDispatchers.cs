@@ -11,9 +11,28 @@ namespace ShuppanButsu.Infrastructure
         Boolean ExecuteCommand(ICommand command);
     }
 
-    public interface IDomainEventDispatcher 
+    public interface IDomainEventDispatcher
     {
 
         void DispatchEvent(DomainEvent @event);
+    }
+
+    public interface IDomainEventInterceptor
+    {
+        void OnGenerated(DomainEvent @event);
+    }
+
+    public class NullEventInterceptor : IDomainEventInterceptor
+    {
+        public static NullEventInterceptor Instance { get; private set; }
+
+        static NullEventInterceptor()
+        {
+            Instance = new NullEventInterceptor();
+        }
+
+        public void OnGenerated(DomainEvent @event)
+        {
+        }
     }
 }

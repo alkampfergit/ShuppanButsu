@@ -11,22 +11,34 @@ namespace ShuppanButsu.Domain
 {
     public class AggregateRoot : IAggregateRoot
     {
-        #region Basic properties 
+        #region Basic properties
 
         public Guid Id { get; protected set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private IDomainEventInterceptor Interceptor {
+            get { return _interceptor ?? (_interceptor = NullEventInterceptor.Instance); } 
+            set {_interceptor = value;} 
+        }
+        private IDomainEventInterceptor _interceptor;
         #endregion
 
         #region IAggregateRoot
 
         void IAggregateRoot.ApplyEvent(DomainEvent @event)
         {
+            if (@event is AggregateRootCreationDomainEvent)
+            {
+                Id = ((AggregateRootCreationDomainEvent)@event).Id;
+            }
             FasterflectInvoker.Invoke(this, @event);
         }
 
-        IEnumerable<DomainEvent> IAggregateRoot.GetRaisedEvents() 
-        { 
-            return _raisedEvents ??  emptyEvents;
+        IEnumerable<DomainEvent> IAggregateRoot.GetRaisedEvents()
+        {
+            return _raisedEvents ?? emptyEvents;
         }
 
         void IAggregateRoot.ClearRaisedEvents()
@@ -43,16 +55,26 @@ namespace ShuppanButsu.Domain
         private List<DomainEvent> _raisedEvents;
         private List<DomainEvent> RaisedEvents { get { return _raisedEvents ?? (_raisedEvents = new List<DomainEvent>()); } }
 
-        protected void RaiseEvent(DomainEvent @event) 
+        protected void RaiseEvent(DomainEvent @event)
         {
-            ((IAggregateRoot) this).ApplyEvent(@event);
+            if (@event is AggregateRootCreationDomainEvent)
+            {
+                Id = ((AggregateRootCreationDomainEvent)@event).Id;
+            }
+            Interceptor.OnGenerated(@event);
+            ((IAggregateRoot)this).ApplyEvent(@event);
             RaisedEvents.Add(@event);
         }
 
         #endregion
+
+        #region Construction
+
+
+        #endregion
     }
 
-    internal static class FasterflectInvoker 
+    internal static class FasterflectInvoker
     {
         /// <summary>
         /// Cache of appliers, for each domain object I have a dictionary of actions

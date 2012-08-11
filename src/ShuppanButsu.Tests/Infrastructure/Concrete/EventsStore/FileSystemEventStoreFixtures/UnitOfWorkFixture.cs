@@ -9,6 +9,7 @@ using ShuppanButsu.Tests.Utils;
 using Xunit;
 using SharpTestsEx;
 using ShuppanButsu.Infrastructure.Concrete;
+using Rhino.Mocks;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete
 {
@@ -18,7 +19,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
 
         public UnitOfWorkFixture()
         {
-            sut = new UnitOfWork(new InMemoryEventsStore());
+            sut = new UnitOfWork(new InMemoryEventsStore(), MockRepository.GenerateStub<IDomainEventDispatcher>());
         }
 
         [Fact]

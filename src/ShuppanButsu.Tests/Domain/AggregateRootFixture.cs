@@ -14,11 +14,15 @@ namespace ShuppanButsu.Tests.Domain
     public class AggregateRootFixture
     {
         [Fact]
+        public void Verify_automatic_creation_of_id() { 
+        
+        }
+        
+        [Fact]
         public void Verify_basic_ability_of_event_reapplier() 
         {
             TestClassForAggregateRoot sut = new TestClassForAggregateRoot();
             var evt = new TestClassForAggregateRootCreated() { 
-                Id = Guid.NewGuid(),
                 IntProperty = 42,
                 StringProperty = "42",
             };

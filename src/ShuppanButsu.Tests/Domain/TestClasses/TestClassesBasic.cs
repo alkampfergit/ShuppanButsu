@@ -16,7 +16,6 @@ namespace ShuppanButsu.Tests.Domain.TestClasses
 
         private void Apply(TestClassForAggregateRootCreated @event)
         {
-            Id = @event.Id;
             IntProperty = @event.IntProperty;
             StringProperty = @event.StringProperty;
         }
@@ -25,7 +24,6 @@ namespace ShuppanButsu.Tests.Domain.TestClasses
         {
             RaiseEvent(new TestClassForAggregateRootCreated()
             {
-                Id = Guid.NewGuid(),
                 IntProperty = 0,
                 StringProperty = "0",
             });
@@ -43,9 +41,8 @@ namespace ShuppanButsu.Tests.Domain.TestClasses
         }
     }
 
-    class TestClassForAggregateRootCreated : DomainEvent
+    public class TestClassForAggregateRootCreated : AggregateRootCreationDomainEvent
     {
-        public Guid Id { get; set; }
         public Int32 IntProperty { get; set; }
         public String StringProperty { get; set; }
     }

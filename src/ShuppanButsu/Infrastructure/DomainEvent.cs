@@ -15,4 +15,19 @@ namespace ShuppanButsu.Infrastructure
             Timestamp = DateTime.Now;
         }
     }
+
+    public class AggregateRootCreationDomainEvent : DomainEvent
+    {
+        public Guid Id { get; private set; }
+
+        public AggregateRootCreationDomainEvent(Guid id) 
+        {
+            Id = id;
+        }
+
+        public AggregateRootCreationDomainEvent()
+        {
+            Id = Guid.NewGuid();
+        }
+    }
 }

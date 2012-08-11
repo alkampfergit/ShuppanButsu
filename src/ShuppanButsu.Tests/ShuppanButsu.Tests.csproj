@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRootFixture.cs" />
+    <Compile Include="Domain\Blog\PostTests\BasicPostFixture.cs" />
+    <Compile Include="Domain\InterceptDomainEventsHelper.cs" />
     <Compile Include="Domain\TestClasses\TestClassesBasic.cs" />
     <Compile Include="Infrastructure\Concrete\CastleFasterflectCatalogFixture.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\FileSystemEventStoreFixtures\FileSystemEventsStoreBasicFunctionalitiesFixture.cs" />
