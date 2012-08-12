@@ -39,6 +39,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CookComputing.XmlRpcV2">
+      <HintPath>..\..\libs\CookComputingXmlRpc\CookComputing.XmlRpcV2.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -107,6 +110,27 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="MetaweblogApi\Domain\BlogInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\Category.cs" />
+    <Compile Include="MetaweblogApi\Domain\CategoryInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\Enclosure.cs" />
+    <Compile Include="MetaweblogApi\Domain\MediaObject.cs" />
+    <Compile Include="MetaweblogApi\Domain\MediaObjectInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\MtCategory.cs" />
+    <Compile Include="MetaweblogApi\Domain\Page.cs" />
+    <Compile Include="MetaweblogApi\Domain\PageInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\Post.cs" />
+    <Compile Include="MetaweblogApi\Domain\Source.cs" />
+    <Compile Include="MetaweblogApi\Domain\UserInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\WpAuthor.cs" />
+    <Compile Include="MetaweblogApi\Domain\WpCategoryInfo.cs" />
+    <Compile Include="MetaweblogApi\Domain\WpNewCategory.cs" />
+    <Compile Include="MetaweblogApi\Domain\WpTagInfo.cs" />
+    <Compile Include="MetaweblogApi\IBloggerApi.cs" />
+    <Compile Include="MetaweblogApi\IMetaWeblog.cs" />
+    <Compile Include="MetaweblogApi\IWordPressApi.cs" />
+    <Compile Include="MetaweblogApi\MetaweblogHandler.cs" />
+    <Compile Include="MetaweblogApi\MetaWeblogHandler.Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
