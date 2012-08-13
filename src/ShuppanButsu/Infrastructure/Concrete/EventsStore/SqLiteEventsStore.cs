@@ -139,7 +139,9 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             using (var session = _sessionFactory.OpenStatelessSession())
             using (var transaction = session.BeginTransaction())
             {
-                //session.Connection.Open();
+                //not so beautiful, but potentially this reads really lots of data from db
+                //it is absolutely not admittable to bring every object in memory, the DataReader 
+                //choose is surely better
                 using (IDbCommand cmd = session.Connection.CreateCommand())
                 { 
                     cmd.CommandText = "Select Payload, CorrleationId, Ticks from SqlEvent sev where sev.Ticks >= " + tickFrom + 
@@ -154,19 +156,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                                     (Int64)dr["Ticks"]);
                         }
                     }
-                }
-                //session.CreateQuery("Select sev from SqlEvent sev where sev.Ticks >= :start and sev.Ticks <= :end")
-                //    .SetInt64("start", tickFrom)
-                //    .SetInt64("end", tickTo)
-                //    .List(
-                //return session.Query<SqlEvent>()
-                //    .Where(se => se.Ticks >= tickFrom && se.Ticks <= tickTo)
-                //    .OrderBy(se => se.Ticks)
-                //    .Select(se => new Event(
-                //        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
-                //        se.CorrleationId,
-                //        se.Ticks))
-                //    .ToList();
+                } 
             }
         }
     }
