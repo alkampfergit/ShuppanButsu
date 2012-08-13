@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using CookComputing.XmlRpc;
@@ -16,7 +17,7 @@ namespace ShuppanButsu.Web.MetaweblogApi
 
         public MetaWeblogHandler()
         {
-
+            Debug.WriteLine("Handler for metaweblog called");
          
         }
 
@@ -340,7 +341,14 @@ namespace ShuppanButsu.Web.MetaweblogApi
             //    logger.Error(e.Message, e);
             //    throw;
             //}
-            return null;
+
+            var blogInfo = new BlogInfo
+            {
+                blogid = "root",
+                blogName = "ShuppanButsu",
+                url = "http://localhost:42000/metaweblog.axd"
+            };
+            return new[] { blogInfo };
         }
 
         /// <summary>

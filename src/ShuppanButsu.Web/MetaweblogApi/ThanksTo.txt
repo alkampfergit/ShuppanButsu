@@ -1,0 +1,2 @@
+﻿Many thanks to my friend UGO for letting me use the code from Dexter blog engine to implement
+metaweblogapi.
