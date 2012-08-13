@@ -75,7 +75,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
                 ((IAggregateRoot)ar).ClearRaisedEvents();
             }
 
-            var orderedEvents = eventsToStore.OrderBy(e => e.TickId).Select(e => (DomainEvent) e.Payload);
+            var orderedEvents = eventsToStore.OrderBy(e => e.Ticks).Select(e => (DomainEvent) e.Payload);
             foreach (var @event in orderedEvents)
             {
                 _domainEventDispatcher.DispatchEvent(@event);

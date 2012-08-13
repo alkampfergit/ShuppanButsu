@@ -58,7 +58,7 @@ namespace ShuppanButsu.Infrastructure
         /// <summary>
         /// It Contains the tick id extracted by the datetime
         /// </summary>
-        public Int64 TickId { get; set; }
+        public Int64 Ticks { get; set; }
 
         public Event() : this (null, String.Empty)
         { 
@@ -92,7 +92,7 @@ namespace ShuppanButsu.Infrastructure
         {
             Payload = payload;
             CorrelationId = correlationId;
-            TickId = tickId;
+            Ticks = tickId;
         }
     }
 }

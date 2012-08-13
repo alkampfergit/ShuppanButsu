@@ -7,10 +7,12 @@ using ShuppanButsu.Infrastructure;
 using ShuppanButsu.Infrastructure.Concrete.EventsStore;
 using Xunit;
 using SharpTestsEx;
+using ShuppanButsu.Tests.Utils;
+using System.IO;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixtures
 {
-    public abstract class BaseEventStoreFixture : IDisposable
+    public abstract class BaseEventStoreFixture : BaseTestFixtureWithHelper, IDisposable
     {
 
         IEventsStore sut;
@@ -49,7 +51,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixt
             var loadedEvt = commit.Single();
             loadedEvt.Payload.Should().Be.OfType<SamplePayload>();
             SamplePayload loadedPayload = (SamplePayload)loadedEvt.Payload;
-            loadedEvt.TickId.Should().Be.EqualTo(evt.TickId);
+            loadedEvt.Ticks.Should().Be.EqualTo(evt.Ticks);
             loadedEvt.CorrelationId.Should().Be.EqualTo(evt.CorrelationId);
             loadedPayload.StringProperty.Should().Be.EqualTo(aPayload.StringProperty);
             loadedPayload.DoubleProperty.Should().Be.EqualTo(aPayload.DoubleProperty);
@@ -177,11 +179,14 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixt
         }
     }
 
+    [UseNhProf]
     public class SqliteEventsStoreFixture : BaseEventStoreFixture
     {
         protected override IEventsStore GenerateSut()
         {
-            return new SqLiteEventsStore(@"Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml");
+            //Delete the eventual existing db
+            if (File.Exists("eventstore.db")) File.Delete("eventstore.db");
+            return new SqlEventsStore(@"Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml");
         }
     }
 }

@@ -13,26 +13,27 @@ using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Tool.hbm2ddl;
 using ShuppanButsu.Utils.JsonNet;
+using NHibernate.Linq;
 
 namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 {
     /// <summary>
     /// Primitive implementation of an event store that store events in file system.
     /// </summary>
-    public class SqLiteEventsStore : IEventsStore, IDisposable
+    public class SqlEventsStore : IEventsStore, IDisposable
     {
         private static ISessionFactory _sessionFactory;
         private static Configuration cfg;
 
         JsonSerializerSettings serializerSettings;
 
-        public SqLiteEventsStore(String configurationFileName) 
+        public SqlEventsStore(String configurationFileName) 
         { 
             XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(configurationFileName)));
             Init(reader);
         }
 
-        public SqLiteEventsStore(XmlReader reader)
+        public SqlEventsStore(XmlReader reader)
         {
             Init(reader);
         }
@@ -43,16 +44,15 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             cfg.Configure(reader);
 
             var mapper = new ConventionModelMapper();
-            //mapper.IsEntity((t, declared) => t.Namespace.StartsWith("Sample.QueryModel") || );
-
             mapper.AfterMapClass += (inspector, type, classCustomizer) =>
             {
                 classCustomizer.Lazy(false);
-                //classCustomizer.Id(m => m.Generator(new GuidGeneratorDef()));
             };
-            var mapping = mapper.CompileMappingFor(new[] { typeof(SqlEvent) });
-            var allmapping = mapping.AsString();
+            mapper.Class<SqlEvent>(map => map.Id(se => se.Id, idm => idm.Generator(Generators.Native)));
 
+            var mapping = mapper.CompileMappingFor(new[] { typeof(SqlEvent) });
+            //mapper.Class<SqlEvent>(m => m.Id(evt => evt.Ticks));
+            //Console.Write(mapping.AsString());
             cfg.AddDeserializedMapping(mapping, "AutoModel");
             _sessionFactory = cfg.BuildSessionFactory();
 
@@ -60,15 +60,35 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             export.Execute(false, true);
 
             serializerSettings = new JsonSerializerSettings();
-            serializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+            serializerSettings.TypeNameHandling = TypeNameHandling.All;
             serializerSettings.ContractResolver = new CustomContractResolver();
         }
 
-
-
+        /// <summary>
+        /// Persist a bunch of events.
+        /// </summary>
+        /// <param name="domainEvents"></param>
+        /// <param name="commitId"></param>
         public void PersistEvents(IEnumerable<Event> domainEvents, Guid commitId)
         {
-            throw new NotImplementedException();
+            using (var session = _sessionFactory.OpenSession())  
+            using (var transaction = session.BeginTransaction())
+            {
+                if (session.Query<SqlEvent>().Count(se => se.CommitId == commitId) > 0) 
+                {
+                    throw new ArgumentException("Another commit was present with the same commitId", "commitId");
+                }
+                foreach (var evt in domainEvents)
+                {
+                    SqlEvent sqlEvent = new SqlEvent();
+                    sqlEvent.CommitId = commitId;
+                    sqlEvent.CorrleationId = evt.CorrelationId;
+                    sqlEvent.Payload = JsonConvert.SerializeObject(evt.Payload, serializerSettings);
+                    sqlEvent.Ticks = evt.Ticks;
+                    session.Save(sqlEvent);
+                }
+                transaction.Commit();
+            }
             
         }
 
@@ -79,12 +99,32 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         /// <returns></returns>
         public IEnumerable<Event> GetByCorrelationId(string correlationId)
         {
-            throw new NotImplementedException();
+            using (var session = _sessionFactory.OpenSession())
+            {
+                return session.Query<SqlEvent>()
+                    .Where(se => se.CorrleationId == correlationId)
+                    .OrderBy(se => se.Ticks)
+                    .Select(se => new Event(
+                        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
+                        se.CorrleationId,
+                        se.Ticks))
+                    .ToList();
+            }
         }
 
         public IEnumerable<Event> GetByCommitId(Guid commitId)
         {
-            throw new NotImplementedException();
+            using (var session = _sessionFactory.OpenSession())
+            {
+                return session.Query<SqlEvent>()
+                    .Where(se => se.CommitId == commitId)
+                    .OrderBy(se => se.Ticks)
+                    .Select(se => new Event(
+                        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
+                        se.CorrleationId,
+                        se.Ticks))
+                    .ToList();
+            }
         }
 
         public void Dispose()
@@ -95,12 +135,24 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         public IEnumerable<Event> GetRange(long tickFrom, long tickTo)
         {
-            throw new NotImplementedException();
+            using (var session = _sessionFactory.OpenSession())
+            using (var transaction = session.BeginTransaction())
+            {
+                return session.Query<SqlEvent>()
+                    .Where(se => se.Ticks >= tickFrom && se.Ticks <= tickTo)
+                    .OrderBy(se => se.Ticks)
+                    .Select(se => new Event(
+                        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
+                        se.CorrleationId,
+                        se.Ticks))
+                    .ToList();
+            }
         }
     }
 
     public class SqlEvent 
     {
+        public Int64 Id { get; set; }
         public Guid CommitId { get; set; }
         public String CorrleationId { get; set; }
         public Int64 Ticks { get; set; }
