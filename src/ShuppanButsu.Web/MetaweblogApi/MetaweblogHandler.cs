@@ -345,7 +345,7 @@ namespace ShuppanButsu.Web.MetaweblogApi
             var blogInfo = new BlogInfo
             {
                 blogid = "root",
-                blogName = "ShuppanButsu",
+                blogName = "Root",
                 url = "http://localhost:42000/metaweblog.axd"
             };
             return new[] { blogInfo };

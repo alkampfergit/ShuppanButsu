@@ -12,7 +12,7 @@ using Xunit;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete
 {
-    [UseAutoMockingContainer(new Type[] {typeof(CastleFasterflectHandlerCatalog)})]
+    [UseAutoMockingContainer(new Type[] { typeof(CastleFasterflectHandlerCatalog) })]
     public class CastleFasterflectHandlerCatalogFixture : BaseTestFixtureWithHelper
     {
         private CastleFasterflectHandlerCatalog sut;
@@ -23,7 +23,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
             sut = this.GetSut<CastleFasterflectHandlerCatalog>();
         }
 
-
+          
         [Fact]
         public void Verify_that_assembly_are_scanned_correctly()
         {
@@ -123,7 +123,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
             EventHandlerDefault.ConstructorCallCount.Should().Be.EqualTo(actualCount);
         }
 
-     
+
     }
 
     #region Command helper classes
@@ -206,7 +206,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
     public class AnotherEvent : DomainEvent { public Int32 CallCount { get; set; } }
     public class AnotherEvent2 : DomainEvent { public Int32 CallCount { get; set; } }
 
-   
+     
 
     public class EventHandlerDefault : IDomainEventHandler
     {

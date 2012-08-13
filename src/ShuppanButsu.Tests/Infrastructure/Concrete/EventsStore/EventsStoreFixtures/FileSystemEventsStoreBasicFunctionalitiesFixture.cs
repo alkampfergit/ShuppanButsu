@@ -146,7 +146,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixt
             sut.PersistEvents(new Event[] { evt }, commitId);
             (new Action(() => sut.PersistEvents(new Event[] { evt }, commitId))).Should().Throw();
         }
-    }
+    } 
 
     public class SamplePayload
     {
@@ -164,20 +164,21 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixt
             PrivateSetterProperty = privateSetterProperty;
         }
     }
-
+     
     public class FileSystemEventsStoreFixture : BaseEventStoreFixture
     {
         protected override IEventsStore GenerateSut()
         {
-            Console.WriteLine("FileSystemEventsStoreFixture");
             var dirpath = "c:\\temp\\testevents";
             if (System.IO.Directory.Exists(dirpath))
             {
                 System.IO.Directory.Delete(dirpath, true);
             }
-            return new FileSystemEventsStore(dirpath);
+            var sut = new FileSystemEventsStore(dirpath);
+            DisposeAtTheEndOfTest(sut);
+            return sut;
         }
-    }
+    }   
 
     [UseNhProf]
     public class SqliteEventsStoreFixture : BaseEventStoreFixture
@@ -186,7 +187,9 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete.EventsStore.EventsStoreFixt
         {
             //Delete the eventual existing db
             if (File.Exists("eventstore.db")) File.Delete("eventstore.db");
-            return new SqlEventsStore(@"Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml");
+            var sut = new SqlEventsStore(@"Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml");
+            DisposeAtTheEndOfTest(sut);
+            return sut;
         }
     }
 }

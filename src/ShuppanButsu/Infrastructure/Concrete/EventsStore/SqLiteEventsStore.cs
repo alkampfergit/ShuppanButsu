@@ -90,10 +90,10 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                 }
                 transaction.Commit();
             }
-            
+             
         }
 
-        /// <summary>
+        /// <summary> 
         /// 
         /// </summary>
         /// <param name="correlationId"></param>
@@ -143,24 +143,25 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                 //it is absolutely not admittable to bring every object in memory, the DataReader 
                 //choose is surely better
                 using (IDbCommand cmd = session.Connection.CreateCommand())
-                { 
-                    cmd.CommandText = "Select Payload, CorrleationId, Ticks from SqlEvent sev where sev.Ticks >= " + tickFrom + 
+                {
+                    cmd.CommandText = "Select Payload, CorrleationId, Ticks from SqlEvent sev where sev.Ticks >= " + tickFrom +
                         " and sev.Ticks <= " + tickTo;
-                    using (var dr = cmd.ExecuteReader()) 
+                    using (var dr = cmd.ExecuteReader())
                     {
-                        while (dr.Read()) {
+                        while (dr.Read())
+                        {
 
                             yield return new Event(
-                                    JsonConvert.DeserializeObject((String) dr["Payload"], serializerSettings),
-                                   (String) dr["CorrleationId"],
+                                    JsonConvert.DeserializeObject((String)dr["Payload"], serializerSettings),
+                                   (String)dr["CorrleationId"],
                                     (Int64)dr["Ticks"]);
                         }
-                    }
+                    } 
                 } 
             }
         }
     }
-
+     
     public class SqlEvent 
     {
         public Int64 Id { get; set; }

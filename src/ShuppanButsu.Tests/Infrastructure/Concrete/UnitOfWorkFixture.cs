@@ -13,17 +13,17 @@ using Rhino.Mocks;
 
 namespace ShuppanButsu.Tests.Infrastructure.Concrete
 {
-    public class UnitOfWorkFixture
+    public class UnitOfWorkFixture : BaseTestFixtureWithHelper
     {
         UnitOfWork sut;
 
         public UnitOfWorkFixture()
         {
-            sut = new UnitOfWork(new InMemoryEventsStore(), MockRepository.GenerateStub<IDomainEventDispatcher>());
+            sut = new UnitOfWork(new InMemoryEventsStore(), MockRepository.GenerateStub<IDomainEventDispatcher>(), new AggregateRootFactory());
         }
 
         [Fact]
-        public void verify_base_save_and_load() 
+        public void verify_base_save_and_load()
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
             sut.Save(entity);
@@ -33,7 +33,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         }
 
         [Fact]
-        public void verify_commit_will_now_modify_aggregateRoots_after_previous_commit_without_explicit_load() 
+        public void verify_commit_will_now_modify_aggregateRoots_after_previous_commit_without_explicit_load()
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
             entity.Increment(10);
@@ -47,7 +47,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.IntProperty.Should().Be.EqualTo(10);
         }
-
+          
         [Fact]
         public void verify_save_get_modify_save()
         {
@@ -67,7 +67,7 @@ namespace ShuppanButsu.Tests.Infrastructure.Concrete
         public void verify_get_back_whole_stream_of_events()
         {
             TestClassForAggregateRoot entity = new TestClassForAggregateRoot();
-                        sut.Save(entity);
+            sut.Save(entity);
             sut.Commit(Guid.NewGuid());
             var loaded = sut.GetById<TestClassForAggregateRoot>(entity.Id);
             loaded.Id.Should().Be.EqualTo(entity.Id);

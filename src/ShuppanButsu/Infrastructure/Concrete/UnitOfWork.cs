@@ -11,11 +11,13 @@ namespace ShuppanButsu.Infrastructure.Concrete
     {
         private IEventsStore _eventStore;
         private IDomainEventDispatcher _domainEventDispatcher;
+        private AggregateRootFactory _factory;
 
-        public UnitOfWork(IEventsStore eventsStore, IDomainEventDispatcher domainEventDispatcher) 
+        public UnitOfWork(IEventsStore eventsStore, IDomainEventDispatcher domainEventDispatcher, AggregateRootFactory factory) 
         {
             _eventStore = eventsStore;
             _domainEventDispatcher = domainEventDispatcher;
+            _factory = factory;
         }
 
         private Dictionary<Guid, AggregateRoot> _idMap = new Dictionary<Guid, AggregateRoot>();
@@ -30,9 +32,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
         {
             if (_idMap.ContainsKey(id)) return (T) _idMap[id];
 
-            T aggregateRoot = new T();
-            //A call to clear raised events is needed if the class implement raising events in default constructor
-            ((IAggregateRoot)aggregateRoot).ClearRaisedEvents();
+            T aggregateRoot = _factory.Create<T>();
 
             var commits = _eventStore.GetByCorrelationId(id.ToString());
             foreach (var commit in commits)

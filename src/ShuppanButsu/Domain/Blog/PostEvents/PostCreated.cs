@@ -15,11 +15,14 @@ namespace ShuppanButsu.Domain.Blog.PostEvents
 
         public String SlugCode { get; private set; }
 
-        public PostCreated(String title, String content, String slugCode) : base(Guid.NewGuid())
+        public String BlogName { get; private set; }
+
+        public PostCreated(String title, String content, String slugCode, String blogName) : base(Guid.NewGuid())
         {
             Title = title;
             Content = content;
             SlugCode = slugCode;
+            BlogName = blogName;
         }
     }
 

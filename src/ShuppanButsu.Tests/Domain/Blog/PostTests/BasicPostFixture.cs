@@ -21,7 +21,7 @@ namespace ShuppanButsu.Tests.Domain.Blog.PostTests
         [Fact]
         public void Verify_calculation_of_slugId_during_post_creation() 
         {
-            Post post =  Post.CreatePost(this.AggregateRootFactory(), "this is a title", "Anycontent");
+            Post post =  Post.CreatePost(this.AggregateRootFactory(), "this is a title", "Anycontent", "");
             this.GetFirstDomainEvent<PostCreated>()
                 .SlugCode.Should().Be.EqualTo("this-is-a-title");
         }
@@ -29,7 +29,7 @@ namespace ShuppanButsu.Tests.Domain.Blog.PostTests
         [Fact]
         public void Verify_calculation_of_slugId_with_accent_characters()
         {
-            Post post = Post.CreatePost(this.AggregateRootFactory(), "this is é titlè", "Anycontent");
+            Post post = Post.CreatePost(this.AggregateRootFactory(), "this is é titlè", "Anycontent", "");
             this.GetFirstDomainEvent<PostCreated>()
                 .SlugCode.Should().Be.EqualTo("this-is-e-title");
         }
@@ -37,18 +37,18 @@ namespace ShuppanButsu.Tests.Domain.Blog.PostTests
         [Fact]
         public void verify_slug_is_all_lowercase()
         {
-            Post post = Post.CreatePost(this.AggregateRootFactory(), "This is a GOOD title", "Anycontent");
+            Post post = Post.CreatePost(this.AggregateRootFactory(), "This is a GOOD title", "Anycontent", "");
             this.GetFirstDomainEvent<PostCreated>()
                 .SlugCode.Should().Be.EqualTo("this-is-a-good-title");
         }
-
+         
 
         [Fact]
         public void more_diacritic_removal_verification()
         {
-            Post post = Post.CreatePost(this.AggregateRootFactory(), "äöüÄÖÜ", "Anycontent");
+            Post post = Post.CreatePost(this.AggregateRootFactory(), "äöüÄÖÜ", "Anycontent", "");
             this.GetFirstDomainEvent<PostCreated>()
-                .SlugCode.Should().Be.EqualTo("aouaou");
+                .SlugCode.Should().Be.EqualTo("aouaou"); 
         }
     }
 }

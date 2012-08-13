@@ -44,7 +44,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
 
         private void ScanAllAssembliesInDirectory(String enumerationDirectory)
         {
-            var files = Directory.EnumerateFiles(enumerationDirectory);
+            var files = Directory.EnumerateFiles(enumerationDirectory, "*.*", SearchOption.TopDirectoryOnly);
             foreach (var fileName in files)
             {
                 //provare a caricare dinamicamente un assembly

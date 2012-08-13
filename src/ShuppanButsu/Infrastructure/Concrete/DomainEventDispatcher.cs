@@ -72,7 +72,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
                 catch (OutOfMemoryException)
                 {
                     throw;
-                }
+                }  
                 catch (Exception ex)
                 {
                     _logger.Error("Error during dispatching event " + @event.GetType() + " to the handler " + executor.DefiningType + "." + executor.Invoker.Method.Name, ex);

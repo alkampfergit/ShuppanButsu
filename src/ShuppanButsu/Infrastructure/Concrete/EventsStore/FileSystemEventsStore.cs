@@ -159,7 +159,6 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         {
             _lockFilestream.Close();
             File.Delete(GetLockFileName());
-
         }
 
 

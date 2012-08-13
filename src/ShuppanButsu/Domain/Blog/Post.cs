@@ -8,11 +8,15 @@ using ShuppanButsu.Domain.Blog.PostEvents;
 
 namespace ShuppanButsu.Domain.Blog
 {
+    /// <summary>
+    /// This class represent a post in a blog.
+    /// </summary>
     public class Post : AggregateRoot
     {
         private String content;
-        public String title { get; set; }
-        public String slugCode { get; set; }
+        private String title;
+        private String slugCode;
+        private String blogName;
 
         private Post() { }
 
@@ -23,7 +27,7 @@ namespace ShuppanButsu.Domain.Blog
         /// <param name="title"></param>
         /// <param name="textContent"></param>
         /// <returns></returns>
-        public static Post CreatePost(AggregateRootFactory factory, String title, String textContent) 
+        public static Post CreatePost(AggregateRootFactory factory, String title, String textContent, String blogName) 
         { 
             //Slug is created replacing any non number or letter char with a dash
             //accents are removed
@@ -32,7 +36,7 @@ namespace ShuppanButsu.Domain.Blog
                 .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
                 .Select(Char.ToLower)
                 .Aggregate(new StringBuilder(), (sb, c) => Char.IsLetterOrDigit(c) ? sb.Append(c) : sb.Append("-"));
-            var evt = new PostCreated(title, textContent, slug.ToString());
+            var evt = new PostCreated(title, textContent, slug.ToString(), blogName);
             return factory.Create<Post>(evt);
         }
 

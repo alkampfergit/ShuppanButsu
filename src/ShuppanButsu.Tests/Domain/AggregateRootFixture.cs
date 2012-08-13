@@ -31,7 +31,7 @@ namespace ShuppanButsu.Tests.Domain
             sut.StringProperty.Should().Be.EqualTo("42");
             sut.Id.Should().Be.EqualTo(evt.Id);
         }
-
+          
         [Fact]
         public void Verify_generation_of_events() 
         {
