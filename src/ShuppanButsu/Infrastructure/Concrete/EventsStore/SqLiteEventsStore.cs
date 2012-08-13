@@ -14,6 +14,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Tool.hbm2ddl;
 using ShuppanButsu.Utils.JsonNet;
 using NHibernate.Linq;
+using System.Data;
 
 namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 {
@@ -135,17 +136,37 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         public IEnumerable<Event> GetRange(long tickFrom, long tickTo)
         {
-            using (var session = _sessionFactory.OpenSession())
+            using (var session = _sessionFactory.OpenStatelessSession())
             using (var transaction = session.BeginTransaction())
             {
-                return session.Query<SqlEvent>()
-                    .Where(se => se.Ticks >= tickFrom && se.Ticks <= tickTo)
-                    .OrderBy(se => se.Ticks)
-                    .Select(se => new Event(
-                        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
-                        se.CorrleationId,
-                        se.Ticks))
-                    .ToList();
+                //session.Connection.Open();
+                using (IDbCommand cmd = session.Connection.CreateCommand())
+                { 
+                    cmd.CommandText = "Select Payload, CorrleationId, Ticks from SqlEvent sev where sev.Ticks >= " + tickFrom + 
+                        " and sev.Ticks <= " + tickTo;
+                    using (var dr = cmd.ExecuteReader()) 
+                    {
+                        while (dr.Read()) {
+
+                            yield return new Event(
+                                    JsonConvert.DeserializeObject((String) dr["Payload"], serializerSettings),
+                                   (String) dr["CorrleationId"],
+                                    (Int64)dr["Ticks"]);
+                        }
+                    }
+                }
+                //session.CreateQuery("Select sev from SqlEvent sev where sev.Ticks >= :start and sev.Ticks <= :end")
+                //    .SetInt64("start", tickFrom)
+                //    .SetInt64("end", tickTo)
+                //    .List(
+                //return session.Query<SqlEvent>()
+                //    .Where(se => se.Ticks >= tickFrom && se.Ticks <= tickTo)
+                //    .OrderBy(se => se.Ticks)
+                //    .Select(se => new Event(
+                //        JsonConvert.DeserializeObject(se.Payload, serializerSettings),
+                //        se.CorrleationId,
+                //        se.Ticks))
+                //    .ToList();
             }
         }
     }
@@ -158,4 +179,5 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         public Int64 Ticks { get; set; }
         public String Payload { get; set; }
     }
+
 }

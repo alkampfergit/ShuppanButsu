@@ -16,7 +16,13 @@ namespace ShuppanButsu.Domain.Blog
 
         private Post() { }
 
-
+        /// <summary>
+        /// Factory method to create a post
+        /// </summary>
+        /// <param name="factory">The factory to be used for AggregateRootCreation</param>
+        /// <param name="title"></param>
+        /// <param name="textContent"></param>
+        /// <returns></returns>
         public static Post CreatePost(AggregateRootFactory factory, String title, String textContent) 
         { 
             //Slug is created replacing any non number or letter char with a dash
