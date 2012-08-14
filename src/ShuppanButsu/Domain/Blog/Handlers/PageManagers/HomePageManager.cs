@@ -20,8 +20,18 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
 
         public void PostCreatedHandler(PostCreated evt) 
         {
+            //Verify if we need to add this post to the list.
+            if (postsInHomePage.Count >= Configuration.NumberOfPostsInHomePage &&
+                evt.Timestamp < postsInHomePage.Min(e => e.Timestamp)) 
+            {
+                //already reached maximum post number in home page, this post is not older than the other
+                //nothing to add in the home page.
+                return;
+            }
+    
             HtmlDocument templateDocument = new HtmlDocument();
             String BlogDirectory = evt.BlogName;
+           
             if ( !String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(BlogDirectory)) Directory.CreateDirectory(BlogDirectory);
             String templateDirectory = Path.Combine(Configuration.TemplateDirectory, BlogDirectory);
             if (!String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(templateDirectory)) { 
@@ -62,7 +72,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
 
             //remove from original document, remove the attribute id
             templateOfExcerpt.Remove();
-            templateOfExcerpt.Attributes["id"].Remove();
+            templateOfExcerpt.Attributes.Add("id", "postid-" + evt.Id.ToString("N"));
 
             //now we have template, if it is a newPage we can modify this one, if it is not first time we create home page we need to copy.
             var titleNode = templateOfExcerpt.SelectSingleNode(".//*[@id='{title}']");
@@ -86,6 +96,24 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             excerptNode.Attributes["id"].Remove();
             excerptNode.RemoveAllChildren();
             excerptNode.AppendChild(HtmlTextNode.CreateNode(evt.Excerpt));
+
+            postsInHomePage.Add(evt);
+            
+            while (postsInHomePage.Count > Configuration.NumberOfPostsInHomePage)
+            {
+                var postToRemove = postsInHomePage.OrderBy(e => e.Timestamp).First();
+                postsInHomePage.Remove(postToRemove);
+                var docFragmentToRemove = destinationDocument.DocumentNode.SelectSingleNode("//*[@id='postid-" + postToRemove.Id.ToString("N") + "']");
+                if (docFragmentToRemove != null)
+                {
+                    docFragmentToRemove.Remove();
+                }
+                else 
+                {
+                    Logger.Warn("Post id " + postToRemove.Id + " element was not found in the home page");
+                }
+                
+            }
 
             //now append this to the original document and save.
             destinationDocument.DocumentNode.SelectSingleNode("//*[@id='post-container']").AppendChild(templateOfExcerpt);

@@ -15,6 +15,8 @@ namespace ShuppanButsu
     {
         public String TemplateDirectory { get; private set; }
 
+        public Int32 NumberOfPostsInHomePage { get; private set; }
+
         //public ShuppanButsuConfiguration() 
         //{ 
         //    var baseTemplateDirectory = ConfigurationManager.AppSettings["TemplateDirectory"] ?? "Templates";
@@ -22,9 +24,12 @@ namespace ShuppanButsu
         //    TemplateDirectory = Path.Combine(basePath, baseTemplateDirectory);
         //}
 
-        public ShuppanButsuConfiguration(String templateDirectory) 
+        public ShuppanButsuConfiguration(
+            String templateDirectory, 
+            Int32 numberOfPostsInHomePage) 
         {
             TemplateDirectory = templateDirectory;
+            NumberOfPostsInHomePage = numberOfPostsInHomePage;
         }
     }
 }

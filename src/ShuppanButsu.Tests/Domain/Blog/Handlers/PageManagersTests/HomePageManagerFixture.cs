@@ -19,13 +19,15 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
     public class HomePageManagerFixture : BaseTestFixtureWithHelper
     {
         HomePageManager sut;
+
         protected override void OnTestSetUp()
         {
             base.OnTestSetUp();
             sut = new HomePageManager();
             sut.Configuration = new ShuppanButsuConfiguration
             ( 
-                "Domain\\Blog\\Handlers\\PageManagersTests\\TestTemplates"
+                "Domain\\Blog\\Handlers\\PageManagersTests\\TestTemplates",
+                3
             ); 
             sut.Logger = new TestLogger(LoggerLevel.Error);
             if (File.Exists("index.html")) File.Delete("index.html");
@@ -65,6 +67,27 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             outputFile.Should().Contain("<span class=\"title\">The Title2</span>");
             //verify that there is a span with the excerpt for second post
             outputFile.Should().Contain("<p class=\"excerpt\">The excerpt2</p>");
+        }
+
+        [Fact]
+        public void Verify_basic_home_page_with_more_than_allowed_post_in_home_page()
+        {
+            sut.PostCreatedHandler(new PostCreated("The Title1", "Content1", "the-title1", "", "The excerpt1"));
+            sut.PostCreatedHandler(new PostCreated("The Title2", "Content2", "the-title2", "", "The excerpt2"));
+            sut.PostCreatedHandler(new PostCreated("The Title3", "Content3", "the-title3", "", "The excerpt3"));
+            sut.PostCreatedHandler(new PostCreated("The Title4", "Content4", "the-title4", "", "The excerpt4"));
+
+            Assert.True(File.Exists("index.html"));
+            String outputFile = File.ReadAllText("index.html");
+            //Verify that the first post is not present anymore because we have more than three posts
+            outputFile.Should().Not.Contain("<span class=\"title\">The Title1</span>");
+            //verify that there is a span with the excerpt
+            outputFile.Should().Not.Contain("<p class=\"excerpt\">The excerpt1</p>");
+
+            //Verify that there is a span with the title content for second post
+            outputFile.Should().Contain("<span class=\"title\">The Title4</span>");
+            //verify that there is a span with the excerpt for second post
+            outputFile.Should().Contain("<p class=\"excerpt\">The excerpt4</p>");
         }
 
         [Fact]
