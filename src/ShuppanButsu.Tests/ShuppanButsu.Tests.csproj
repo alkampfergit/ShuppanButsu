@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRootFixture.cs" />
+    <Compile Include="Domain\Blog\Handlers\PageManagersTests\HomePageManagerFixture.cs" />
     <Compile Include="Domain\Blog\PostTests\BasicPostFixture.cs" />
     <Compile Include="Domain\InterceptDomainEventsHelper.cs" />
     <Compile Include="Domain\TestClasses\TestClassesBasic.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Utils\AutoMock\UseAutoMockingContainerAttribute.cs" />
     <Compile Include="Utils\BaseTestFixture.cs" />
     <Compile Include="Utils\InMemoryEventsStore.cs" />
+    <Compile Include="Utils\TestLogger.cs" />
     <Compile Include="Utils\UseNhProfilerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +126,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

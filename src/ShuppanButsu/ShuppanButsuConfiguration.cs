@@ -15,11 +15,16 @@ namespace ShuppanButsu
     {
         public String TemplateDirectory { get; private set; }
 
-        public ShuppanButsuConfiguration() 
-        { 
-            var baseTemplateDirectory = ConfigurationManager.AppSettings["TemplateDirectory"] ?? "Templates";
-            String basePath = AppDomain.CurrentDomain.BaseDirectory;
-            TemplateDirectory = Path.Combine(basePath, baseTemplateDirectory);
+        //public ShuppanButsuConfiguration() 
+        //{ 
+        //    var baseTemplateDirectory = ConfigurationManager.AppSettings["TemplateDirectory"] ?? "Templates";
+        //    String basePath = AppDomain.CurrentDomain.BaseDirectory;
+        //    TemplateDirectory = Path.Combine(basePath, baseTemplateDirectory);
+        //}
+
+        public ShuppanButsuConfiguration(String templateDirectory) 
+        {
+            TemplateDirectory = templateDirectory;
         }
     }
 }

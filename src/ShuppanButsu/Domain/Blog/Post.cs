@@ -36,7 +36,7 @@ namespace ShuppanButsu.Domain.Blog
                 .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
                 .Select(Char.ToLower)
                 .Aggregate(new StringBuilder(), (sb, c) => Char.IsLetterOrDigit(c) ? sb.Append(c) : sb.Append("-"));
-            var evt = new PostCreated(title, textContent, slug.ToString(), blogName);
+            var evt = new PostCreated(title, textContent, slug.ToString(), blogName, textContent);
             return factory.Create<Post>(evt);
         }
 
@@ -45,6 +45,7 @@ namespace ShuppanButsu.Domain.Blog
             content = @event.Content;
             title = @event.Title;
             slugCode = @event.SlugCode;
+            blogName = @event.BlogName;
         }
     }
 
