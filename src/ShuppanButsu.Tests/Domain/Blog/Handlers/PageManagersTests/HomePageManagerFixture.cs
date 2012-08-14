@@ -44,5 +44,33 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             //verify that there is a span with the excerpt
             outputFile.Should().Contain("<p class=\"excerpt\">The excerpt</p>");
         }
+
+        [Fact]
+        public void Verify_basic_home_page_creation_for_a_subblog() 
+        {
+            sut.PostCreatedHandler(new PostCreated("The Title", "Content", "the-title", "subblog", "The excerpt"));
+
+            //verify that a file exists and gets created with the expected result.
+            Assert.True(File.Exists("subblog\\index.html"));
+            String outputFile = File.ReadAllText("subblog\\index.html");
+            //Verify that there is a span with the title content.
+            outputFile.Should().Contain("<span class=\"subblogtitle\">The Title</span>");
+            //verify that there is a span with the excerpt
+            outputFile.Should().Contain("<p class=\"subblogexcerpt\">The excerpt</p>");
+        }
+
+        [Fact]
+        public void Verify_subblog_with_no_template_use_default_root_template()
+        {
+            sut.PostCreatedHandler(new PostCreated("The Title", "Content", "the-title", "nonexistenttemplate", "The excerpt"));
+
+            //verify that a file exists and gets created with the expected result.
+            Assert.True(File.Exists("nonexistenttemplate\\index.html"));
+            String outputFile = File.ReadAllText("nonexistenttemplate\\index.html");
+            //Verify that there is a span with the title content.
+            outputFile.Should().Contain("<span class=\"title\">The Title</span>");
+            //verify that there is a span with the excerpt
+            outputFile.Should().Contain("<p class=\"excerpt\">The excerpt</p>");
+        }
     }
 }

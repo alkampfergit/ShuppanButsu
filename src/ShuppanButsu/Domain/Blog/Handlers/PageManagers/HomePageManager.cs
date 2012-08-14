@@ -21,7 +21,15 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
         public void PostCreatedHandler(PostCreated evt) 
         {
             HtmlDocument doc = new HtmlDocument();
-            String templateFileName = Path.Combine(Configuration.TemplateDirectory, "index.html");
+            String BlogDirectory = evt.BlogName;
+            if ( !String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(BlogDirectory)) Directory.CreateDirectory(BlogDirectory);
+            String templateDirectory = Path.Combine(Configuration.TemplateDirectory, BlogDirectory);
+            if (!String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(templateDirectory)) { 
+                //Specific template for this blog does not exists, simple use the standard template
+                templateDirectory = Configuration.TemplateDirectory;
+            }
+
+            String templateFileName = Path.Combine(templateDirectory, "index.html");
             FileInfo finfo = new FileInfo(templateFileName);
             if (!finfo.Exists) 
             {
@@ -63,7 +71,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             excerptNode.AppendChild(HtmlTextNode.CreateNode(evt.Excerpt));
 
             //now save the new file
-            doc.Save("index.html");
+            doc.Save(Path.Combine(BlogDirectory, "index.html"));
         }
 
         private class PostExtract 

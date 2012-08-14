@@ -129,6 +129,9 @@
     <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\subblog\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
