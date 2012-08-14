@@ -29,6 +29,8 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             ); 
             sut.Logger = new TestLogger(LoggerLevel.Error);
             if (File.Exists("index.html")) File.Delete("index.html");
+            if (File.Exists("subblog\\index.html")) File.Delete("subblog\\index.html");
+            if (File.Exists("nonexistenttemplate\\index.html")) File.Delete("nonexistenttemplate\\index.html");
         }
 
         [Fact]
@@ -43,6 +45,26 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             outputFile.Should().Contain("<span class=\"title\">The Title</span>");
             //verify that there is a span with the excerpt
             outputFile.Should().Contain("<p class=\"excerpt\">The excerpt</p>");
+        }
+
+        [Fact]
+        public void Verify_basic_home_page_when_we_have_two_posts()
+        {
+            sut.PostCreatedHandler(new PostCreated("The Title1", "Content1", "the-title1", "", "The excerpt1"));
+            sut.PostCreatedHandler(new PostCreated("The Title2", "Content2", "the-title2", "", "The excerpt2"));
+
+            //verify that a file exists and gets created with the expected result.
+            Assert.True(File.Exists("index.html"));
+            String outputFile = File.ReadAllText("index.html");
+            //Verify that there is a span with the title content.
+            outputFile.Should().Contain("<span class=\"title\">The Title1</span>");
+            //verify that there is a span with the excerpt
+            outputFile.Should().Contain("<p class=\"excerpt\">The excerpt1</p>");
+
+            //Verify that there is a span with the title content for second post
+            outputFile.Should().Contain("<span class=\"title\">The Title2</span>");
+            //verify that there is a span with the excerpt for second post
+            outputFile.Should().Contain("<p class=\"excerpt\">The excerpt2</p>");
         }
 
         [Fact]
