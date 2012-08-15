@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRootFixture.cs" />
+    <Compile Include="Domain\Blog\Handlers\PageManagersTests\PostPageManagerFixture.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagersTests\HomePageManagerFixture.cs" />
     <Compile Include="Domain\Blog\PostTests\BasicPostFixture.cs" />
     <Compile Include="Domain\InterceptDomainEventsHelper.cs" />
@@ -130,6 +131,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\subblog\index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\post.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Domain\Blog\Handlers\PageManagersTests\TestTemplates\subblog\post.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Infrastructure\Concrete\EventsStore\EventsStoreFixtures\SampleNhEventStoreConfiguration.xml">

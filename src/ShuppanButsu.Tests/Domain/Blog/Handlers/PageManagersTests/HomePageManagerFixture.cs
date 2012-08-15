@@ -26,9 +26,8 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             sut = new HomePageManager();
             sut.Configuration = new ShuppanButsuConfiguration
             ( 
-                "Domain\\Blog\\Handlers\\PageManagersTests\\TestTemplates",
-                3
-            ); 
+                "Domain\\Blog\\Handlers\\PageManagersTests\\TestTemplates"
+            ).WithMaxNumberOfPostsInHomePage(3); 
             sut.Logger = new TestLogger(LoggerLevel.Error);
             if (File.Exists("index.html")) File.Delete("index.html");
             if (File.Exists("subblog\\index.html")) File.Delete("subblog\\index.html");
@@ -116,6 +115,28 @@ namespace ShuppanButsu.Tests.Domain.Blog.Handlers.PageManagersTests
             outputFile.Should().Contain("<span class=\"title\">The Title</span>");
             //verify that there is a span with the excerpt
             outputFile.Should().Contain("<p class=\"excerpt\">The excerpt</p>");
+        }
+
+        [Fact]
+        public void Verify_file_name_in_child_directory()
+        {
+            sut.Configuration.WithBaseGenerationDirectory("testdir");
+            sut.PostCreatedHandler(new PostCreated("The Title", "Content", "the-title", "", "The excerpt"));
+
+            //verify that a file exists and gets created with the expected result.
+            Assert.True(File.Exists("testdir\\index.html"));
+           
+        }
+
+        [Fact]
+        public void Verify_file_name_in_child_directory_for_child_blog()
+        {
+            sut.Configuration.WithBaseGenerationDirectory("testdir");
+            sut.PostCreatedHandler(new PostCreated("The Title", "Content", "the-title", "subblog", "The excerpt"));
+
+            //verify that a file exists and gets created with the expected result.
+            Assert.True(File.Exists("testdir\\subblog\\index.html"));
+
         }
     }
 }

@@ -17,6 +17,11 @@ namespace ShuppanButsu
 
         public Int32 NumberOfPostsInHomePage { get; private set; }
 
+        /// <summary>
+        /// We can generate stuff in directory that is not under the current path.
+        /// </summary>
+        public String BaseGenerationDirectory { get; private set; }
+
         //public ShuppanButsuConfiguration() 
         //{ 
         //    var baseTemplateDirectory = ConfigurationManager.AppSettings["TemplateDirectory"] ?? "Templates";
@@ -25,11 +30,22 @@ namespace ShuppanButsu
         //}
 
         public ShuppanButsuConfiguration(
-            String templateDirectory, 
-            Int32 numberOfPostsInHomePage) 
+            String templateDirectory) 
         {
             TemplateDirectory = templateDirectory;
+            BaseGenerationDirectory = String.Empty;
+        }
+
+        public ShuppanButsuConfiguration WithBaseGenerationDirectory(String baseGenerationDirectory) 
+        {
+            BaseGenerationDirectory = baseGenerationDirectory;
+            return this;
+        }
+
+        public ShuppanButsuConfiguration WithMaxNumberOfPostsInHomePage(Int32 numberOfPostsInHomePage)
+        {
             NumberOfPostsInHomePage = numberOfPostsInHomePage;
+            return this;
         }
     }
 }

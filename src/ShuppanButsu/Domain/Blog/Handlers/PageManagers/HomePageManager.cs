@@ -30,7 +30,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             }
     
             HtmlDocument templateDocument = new HtmlDocument();
-            String BlogDirectory = evt.BlogName;
+            String BlogDirectory = Path.Combine(Configuration.BaseGenerationDirectory, evt.BlogName);
            
             if ( !String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(BlogDirectory)) Directory.CreateDirectory(BlogDirectory);
             String templateDirectory = Path.Combine(Configuration.TemplateDirectory, BlogDirectory);

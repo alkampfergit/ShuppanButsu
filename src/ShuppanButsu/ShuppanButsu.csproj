@@ -101,6 +101,8 @@
   <ItemGroup>
     <Compile Include="AggregateRootFactory.cs" />
     <Compile Include="Bootstrap.cs" />
+    <Compile Include="Domain\Blog\Handlers\PageManagers\PostPageManager.cs" />
+    <Compile Include="Domain\Blog\Handlers\PostManagementUtilities.cs" />
     <Compile Include="Infrastructure\BaseHandler.cs" />
     <Compile Include="ShuppanButsuConfiguration.cs" />
     <Compile Include="Domain\AggregateRoot.cs" />
