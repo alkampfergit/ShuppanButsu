@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ShuppanButsu.Utils.JsonNet;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 {
@@ -108,7 +109,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         private string GetCommitIdFile(Guid commitId)
         {
-            return Path.ChangeExtension(Path.Combine(_commitIdFolder, commitId.ToString("N")), ".commit");
+            return Path.ChangeExtension(Path.Combine(_commitIdFolder, commitId.ToAggregateRootId()), ".commit");
         }
 
         #endregion

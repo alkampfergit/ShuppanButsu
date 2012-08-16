@@ -20,7 +20,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
             _factory = factory;
         }
 
-        private Dictionary<Guid, AggregateRoot> _idMap = new Dictionary<Guid, AggregateRoot>();
+        private Dictionary<String, AggregateRoot> _idMap = new Dictionary<String, AggregateRoot>();
 
         /// <summary>
         /// Return an aggregate root with the id
@@ -28,7 +28,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public T GetById<T>(Guid id) where T : AggregateRoot, new()
+        public T GetById<T>(String id) where T : AggregateRoot, new()
         {
             if (_idMap.ContainsKey(id)) return (T) _idMap[id];
 

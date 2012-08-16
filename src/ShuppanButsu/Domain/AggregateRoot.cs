@@ -13,7 +13,7 @@ namespace ShuppanButsu.Domain
     {
         #region Basic properties
 
-        public Guid Id { get; protected set; }
+        public String Id { get; protected set; }
 
         /// <summary>
         /// 

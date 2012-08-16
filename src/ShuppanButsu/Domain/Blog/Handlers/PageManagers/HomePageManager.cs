@@ -72,7 +72,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
 
             //remove from original document, remove the attribute id
             templateOfExcerpt.Remove();
-            templateOfExcerpt.Attributes.Add("id", "postid-" + evt.Id.ToString("N"));
+            templateOfExcerpt.Attributes.Add("id", "postid-" + evt.Id);
 
             //now we have template, if it is a newPage we can modify this one, if it is not first time we create home page we need to copy.
             var titleNode = templateOfExcerpt.SelectSingleNode(".//*[@id='{title}']");
@@ -103,7 +103,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             {
                 var postToRemove = postsInHomePage.OrderBy(e => e.Timestamp).First();
                 postsInHomePage.Remove(postToRemove);
-                var docFragmentToRemove = destinationDocument.DocumentNode.SelectSingleNode("//*[@id='postid-" + postToRemove.Id.ToString("N") + "']");
+                var docFragmentToRemove = destinationDocument.DocumentNode.SelectSingleNode("//*[@id='postid-" + postToRemove.Id + "']");
                 if (docFragmentToRemove != null)
                 {
                     docFragmentToRemove.Remove();

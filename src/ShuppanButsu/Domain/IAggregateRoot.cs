@@ -9,7 +9,7 @@ namespace ShuppanButsu.Domain
 {
     public interface IAggregateRoot
     {
-        Guid Id { get; }
+        String Id { get; }
 
         void ApplyEvent(DomainEvent @event);
 

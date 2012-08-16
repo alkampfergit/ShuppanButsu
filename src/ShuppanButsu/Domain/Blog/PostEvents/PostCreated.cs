@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ShuppanButsu.Infrastructure;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Domain.Blog.PostEvents
 {
@@ -19,7 +20,7 @@ namespace ShuppanButsu.Domain.Blog.PostEvents
 
         public String Excerpt { get; set; }
 
-        public PostCreated(String title, String content, String slugCode, String blogName, String excerpt) : base(Guid.NewGuid())
+        public PostCreated(String title, String content, String slugCode, String blogName, String excerpt) : base(Guid.NewGuid().ToAggregateRootId())
         {
             Title = title;
             Content = content;

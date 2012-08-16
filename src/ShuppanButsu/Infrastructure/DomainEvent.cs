@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Infrastructure
 {
@@ -18,16 +19,16 @@ namespace ShuppanButsu.Infrastructure
 
     public class AggregateRootCreationDomainEvent : DomainEvent
     {
-        public Guid Id { get; private set; }
+        public String Id { get; private set; }
 
-        public AggregateRootCreationDomainEvent(Guid id) 
+        public AggregateRootCreationDomainEvent(String id) 
         {
             Id = id;
         }
 
         public AggregateRootCreationDomainEvent()
         {
-            Id = Guid.NewGuid();
+            Id = Guid.NewGuid().ToAggregateRootId();
         }
     }
 }
