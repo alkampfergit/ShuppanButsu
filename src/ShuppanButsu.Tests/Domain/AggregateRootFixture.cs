@@ -14,7 +14,8 @@ namespace ShuppanButsu.Tests.Domain
     public class AggregateRootFixture
     {
         [Fact]
-        public void Verify_automatic_creation_of_id() { 
+        public void Verify_automatic_creation_of_id() 
+        { 
         
         }
         
