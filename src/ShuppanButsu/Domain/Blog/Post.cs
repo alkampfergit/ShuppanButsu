@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ShuppanButsu.Domain.Blog.PostEvents;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Domain.Blog
 {
@@ -31,12 +32,8 @@ namespace ShuppanButsu.Domain.Blog
         { 
             //Slug is created replacing any non number or letter char with a dash
             //accents are removed
-            String normalizedTitle = title.Normalize(NormalizationForm.FormD);
-            StringBuilder slug = normalizedTitle
-                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                .Select(Char.ToLower)
-                .Aggregate(new StringBuilder(), (sb, c) => Char.IsLetterOrDigit(c) ? sb.Append(c) : sb.Append("-"));
-            var evt = new PostCreated(title, textContent, slug.ToString(), blogName, textContent);
+            String slug = title.Slugify();
+            var evt = new PostCreated(title, textContent, slug, blogName, textContent);
             return factory.Create<Post>(evt);
         }
 

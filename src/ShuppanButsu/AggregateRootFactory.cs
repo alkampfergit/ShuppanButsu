@@ -23,7 +23,8 @@ namespace ShuppanButsu
             DomainEventInterceptor = NullEventInterceptor.Instance;
         }
 
-        static AggregateRootFactory() {
+        static AggregateRootFactory() 
+        {
             interceptorSetter = typeof(AggregateRoot)
                 .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
                 .Single(p => typeof(IDomainEventInterceptor).IsAssignableFrom(p.PropertyType))
@@ -37,8 +38,11 @@ namespace ShuppanButsu
 
         public T Create<T>() where T : AggregateRoot 
         {
-            T instance = (T)FormatterServices.GetUninitializedObject(typeof(T));
+            T instance = (T) Activator.CreateInstance(typeof(T), true); 
             interceptorSetter.Invoke(instance, DomainEventInterceptor);
+            //AR should not generate events on constructors, but if someone designed a class that raise events on the construcotr
+            //those should be removed because they are not useful.
+            ((IAggregateRoot)instance).ClearRaisedEvents();
             return instance;
         }
 

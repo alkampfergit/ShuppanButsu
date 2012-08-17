@@ -101,6 +101,8 @@
   <ItemGroup>
     <Compile Include="AggregateRootFactory.cs" />
     <Compile Include="Bootstrap.cs" />
+    <Compile Include="Domain\Blog\CategoryManager.cs" />
+    <Compile Include="Domain\Blog\CategoryManagerEvents\CategoryAdded.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagers\PostPageManager.cs" />
     <Compile Include="Domain\Blog\Handlers\PostManagementUtilities.cs" />
     <Compile Include="Infrastructure\BaseHandler.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\IdFunctions.cs" />
     <Compile Include="Utils\JsonNet\CustomContractResolver.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -140,6 +143,9 @@
     <None Include="x86\SQLite.Interop.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\Exceptions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

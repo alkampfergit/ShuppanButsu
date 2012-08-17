@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\AggregateRootFixture.cs" />
+    <Compile Include="Domain\Blog\CategoryManagerFixture.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagersTests\PostPageManagerFixture.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagersTests\HomePageManagerFixture.cs" />
     <Compile Include="Domain\Blog\PostTests\BasicPostFixture.cs" />
