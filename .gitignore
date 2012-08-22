@@ -9,4 +9,3 @@ Logs/
 *.tmp_proj
 packages/
 *.user
-/libs
