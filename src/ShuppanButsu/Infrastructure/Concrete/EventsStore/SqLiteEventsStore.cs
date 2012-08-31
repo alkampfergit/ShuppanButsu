@@ -28,8 +28,8 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         JsonSerializerSettings serializerSettings;
 
-        public SqlEventsStore(String configurationFileName) 
-        { 
+        public SqlEventsStore(String configurationFileName)
+        {
             XmlReader reader = XmlReader.Create(new StringReader(File.ReadAllText(configurationFileName)));
             Init(reader);
         }
@@ -49,7 +49,11 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
             {
                 classCustomizer.Lazy(false);
             };
-            mapper.Class<SqlEvent>(map => map.Id(se => se.Id, idm => idm.Generator(Generators.Native)));
+            mapper.Class<SqlEvent>(map =>
+            {
+                map.Id(se => se.Id, idm => idm.Generator(Generators.Native));
+                map.Property(se => se.Payload, pm => pm.Length(8000));
+            });
 
             var mapping = mapper.CompileMappingFor(new[] { typeof(SqlEvent) });
             //mapper.Class<SqlEvent>(m => m.Id(evt => evt.Ticks));
@@ -72,10 +76,10 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
         /// <param name="commitId"></param>
         public void PersistEvents(IEnumerable<Event> domainEvents, Guid commitId)
         {
-            using (var session = _sessionFactory.OpenSession())  
+            using (var session = _sessionFactory.OpenSession())
             using (var transaction = session.BeginTransaction())
             {
-                if (session.Query<SqlEvent>().Count(se => se.CommitId == commitId) > 0) 
+                if (session.Query<SqlEvent>().Count(se => se.CommitId == commitId) > 0)
                 {
                     throw new ArgumentException("Another commit was present with the same commitId", "commitId");
                 }
@@ -90,7 +94,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                 }
                 transaction.Commit();
             }
-             
+
         }
 
         /// <summary> 
@@ -130,7 +134,7 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
 
         public void Dispose()
         {
-           
+
 
         }
 
@@ -156,13 +160,13 @@ namespace ShuppanButsu.Infrastructure.Concrete.EventsStore
                                    (String)dr["CorrleationId"],
                                     (Int64)dr["Ticks"]);
                         }
-                    } 
-                } 
+                    }
+                }
             }
         }
     }
-     
-    public class SqlEvent 
+
+    public class SqlEvent
     {
         public Int64 Id { get; set; }
         public Guid CommitId { get; set; }

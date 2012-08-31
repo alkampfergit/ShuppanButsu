@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
+using Castle.Core.Logging;
 using CookComputing.XmlRpc;
 using ShuppanButsu.Commands.Posts;
 using ShuppanButsu.Infrastructure;
@@ -18,10 +19,14 @@ namespace ShuppanButsu.Web.MetaweblogApi
     {
 
         ICommandDispatcher _commandDispatcher;
+        ILogger _logger;
 
-        public MetaWeblogHandler(ICommandDispatcher commandDispatcher)
+        public MetaWeblogHandler(
+            ICommandDispatcher commandDispatcher,
+            ILogger logger)
         {
             _commandDispatcher = commandDispatcher;
+            _logger = logger;
         }
 
         #region IMetaWeblog Members
@@ -38,15 +43,16 @@ namespace ShuppanButsu.Web.MetaweblogApi
         /// <exception cref = "XmlRpcFaultException"> If <paramref name = "username" /> or <paramref name = "password" /> are invalid.</exception>
         public string AddPost(string blogid, string username, string password, Post post, bool publish)
         {
-            CreatePostCommand command = new CreatePostCommand() { 
-                
+            _logger.Debug("Received call to Add Post ");
+            CreatePostCommand command = new CreatePostCommand() 
+            { 
                 BlogName = blogid,
                 Content = post.description,
                 Title = post.title,
                 Excerpt = post.mt_excerpt,
             };
             _commandDispatcher.ExecuteCommand(command);
-            return "PAPPAPPERO";
+            return command.Id.ToString("N");
         }
 
         /// <summary>
