@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\HandlersInstaller.cs" />
+    <Compile Include="Configurator.cs" />
     <Compile Include="WebBootstrap.cs" />
     <Compile Include="Controllers\Administration.cs" />
     <Compile Include="Global.asax.cs">
@@ -187,6 +188,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

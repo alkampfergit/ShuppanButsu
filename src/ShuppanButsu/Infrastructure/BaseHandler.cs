@@ -21,5 +21,7 @@ namespace ShuppanButsu.Infrastructure
         /// Reference to the configuration of ShuppanButsu engine.
         /// </summary>
         public ShuppanButsuConfiguration Configuration { get; set; }
+
+
     }
 }

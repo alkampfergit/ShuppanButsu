@@ -51,8 +51,7 @@ namespace ShuppanButsu.Web
             container.Register(
                 Component.For<AggregateRootFactory>().UsingFactoryMethod(() => new AggregateRootFactory()));
 
-            container.Register(
-                   Component.For<ShuppanButsuConfiguration>().ImplementedBy<ShuppanButsuConfiguration>());
+
 
             container.Register(
                 Component.For<IEventsStore>().ImplementedBy<SqlEventsStore>()

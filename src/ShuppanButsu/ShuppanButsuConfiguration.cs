@@ -34,6 +34,7 @@ namespace ShuppanButsu
         {
             TemplateDirectory = templateDirectory;
             BaseGenerationDirectory = String.Empty;
+            NumberOfPostsInHomePage = 5;
         }
 
         public ShuppanButsuConfiguration WithBaseGenerationDirectory(String baseGenerationDirectory) 
