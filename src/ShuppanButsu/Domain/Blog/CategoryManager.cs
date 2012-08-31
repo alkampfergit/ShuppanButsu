@@ -8,7 +8,7 @@ using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Domain.Blog
 {
-    public class CategoryManager : AggregateRoot
+    public class CategoryManager : EventSourcingBasedEntity
     {
         List<Category> categories = new List<Category>() { new Category() {Name = ""}};
 

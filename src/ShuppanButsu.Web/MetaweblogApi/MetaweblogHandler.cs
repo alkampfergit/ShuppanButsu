@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Web;
 using CookComputing.XmlRpc;
+using ShuppanButsu.Commands.Posts;
+using ShuppanButsu.Infrastructure;
 using ShuppanButsu.Web.MetaweblogApi.Domain;
 
 namespace ShuppanButsu.Web.MetaweblogApi
@@ -13,12 +16,12 @@ namespace ShuppanButsu.Web.MetaweblogApi
     /// </summary>
     public partial class MetaWeblogHandler : XmlRpcService, IMetaWeblog
     {
-    
 
-        public MetaWeblogHandler()
+        ICommandDispatcher _commandDispatcher;
+
+        public MetaWeblogHandler(ICommandDispatcher commandDispatcher)
         {
-            Debug.WriteLine("Handler for metaweblog called");
-         
+            _commandDispatcher = commandDispatcher;
         }
 
         #region IMetaWeblog Members
@@ -35,26 +38,15 @@ namespace ShuppanButsu.Web.MetaweblogApi
         /// <exception cref = "XmlRpcFaultException"> If <paramref name = "username" /> or <paramref name = "password" /> are invalid.</exception>
         public string AddPost(string blogid, string username, string password, Post post, bool publish)
         {
-            //dexterCall.StartSession();
-
-            //try
-            //{
-            //    ValidateUser(username, password);
-
-            //    var data = ProcessPostData(blogid, username, password, post, null);
-
-            //    dexterCall.Complete(true);
-
-            //    return data;
-            //}
-            //catch (Exception e)
-            //{
-            //    dexterCall.Complete(false);
-            //    logger.Error(e.Message, e);
-            //    throw;
-            //}
-
-            return String.Empty;
+            CreatePostCommand command = new CreatePostCommand() { 
+                
+                BlogName = blogid,
+                Content = post.description,
+                Title = post.title,
+                Excerpt = post.mt_excerpt,
+            };
+            _commandDispatcher.ExecuteCommand(command);
+            return "PAPPAPPERO";
         }
 
         /// <summary>
@@ -791,4 +783,18 @@ namespace ShuppanButsu.Web.MetaweblogApi
 
         #endregion
     }
+
+    public class MetaWebLogHandlerFactory : IHttpHandlerFactory
+    {
+        public IHttpHandler GetHandler(HttpContext context, string requestType, string url, string pathTranslated)
+        {
+            return WebSiteBootstrap.Instance.Container.Resolve<MetaWeblogHandler>();
+        }
+
+        public void ReleaseHandler(IHttpHandler handler)
+        {
+            WebSiteBootstrap.Instance.Container.Release(handler);
+        }
+    }
+
 }

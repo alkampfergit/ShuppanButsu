@@ -84,6 +84,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
                     catch (TypeLoadException ex)
                     {
                         //Create a log that tells what is wrong with that type
+                        _logger.Error("Unable to load types from file " + fileName, ex);
                         throw;
                     }
                     catch (BadImageFormatException ex)

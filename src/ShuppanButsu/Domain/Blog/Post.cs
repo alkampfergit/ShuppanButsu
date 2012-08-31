@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using ShuppanButsu.Domain.Blog.PostEvents;
 using ShuppanButsu.Utils;
 
@@ -12,7 +13,7 @@ namespace ShuppanButsu.Domain.Blog
     /// <summary>
     /// This class represent a post in a blog.
     /// </summary>
-    public class Post : AggregateRoot
+    public class Post : EventSourcingBasedEntity
     {
         private String content;
         private String title;
@@ -28,12 +29,26 @@ namespace ShuppanButsu.Domain.Blog
         /// <param name="title"></param>
         /// <param name="textContent"></param>
         /// <returns></returns>
-        public static Post CreatePost(AggregateRootFactory factory, String title, String textContent, String blogName) 
-        { 
+        public static Post CreatePost(
+            AggregateRootFactory factory,
+            String title,
+            String textContent,
+            String excerpt,
+            String blogName)
+        {
             //Slug is created replacing any non number or letter char with a dash
             //accents are removed
             String slug = title.Slugify();
-            var evt = new PostCreated(title, textContent, slug, blogName, textContent);
+            if (String.IsNullOrEmpty(excerpt))
+            {
+                //Need to calculate the excerpt of the post, in this version just take some text from the
+                //body of the post.
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(textContent);
+                excerpt = doc.DocumentNode.InnerText;
+                if (excerpt.Length > 200) excerpt = excerpt.Substring(0, 200) + "...";
+            }
+            var evt = new PostCreated(title, textContent, slug, blogName, excerpt);
             return factory.Create<Post>(evt);
         }
 
@@ -46,5 +61,5 @@ namespace ShuppanButsu.Domain.Blog
         }
     }
 
-   
+
 }

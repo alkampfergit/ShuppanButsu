@@ -9,7 +9,10 @@ using ShuppanButsu.Infrastructure;
 
 namespace ShuppanButsu.Domain
 {
-    public class AggregateRoot : IAggregateRoot
+    /// <summary>
+    /// It is a base class to support event sourcing.
+    /// </summary>
+    public class EventSourcingBasedEntity : IEventSourcedEntity
     {
         #region Basic properties
 
@@ -18,7 +21,8 @@ namespace ShuppanButsu.Domain
         /// <summary>
         /// 
         /// </summary>
-        private IDomainEventInterceptor Interceptor {
+        private IDomainEventInterceptor Interceptor 
+        {
             get { return _interceptor ?? (_interceptor = NullEventInterceptor.Instance); } 
             set {_interceptor = value;} 
         }
@@ -27,7 +31,7 @@ namespace ShuppanButsu.Domain
 
         #region IAggregateRoot
 
-        void IAggregateRoot.ApplyEvent(DomainEvent @event)
+        void IEventSourcedEntity.ApplyEvent(DomainEvent @event)
         {
             if (@event is AggregateRootCreationDomainEvent)
             {
@@ -36,12 +40,12 @@ namespace ShuppanButsu.Domain
             FasterflectInvoker.Invoke(this, @event);
         }
 
-        IEnumerable<DomainEvent> IAggregateRoot.GetRaisedEvents()
+        IEnumerable<DomainEvent> IEventSourcedEntity.GetRaisedEvents()
         {
             return _raisedEvents ?? emptyEvents;
         }
 
-        void IAggregateRoot.ClearRaisedEvents()
+        void IEventSourcedEntity.ClearRaisedEvents()
         {
             _raisedEvents = null;
         }
@@ -62,7 +66,7 @@ namespace ShuppanButsu.Domain
                 Id = ((AggregateRootCreationDomainEvent)@event).Id;
             }
             Interceptor.OnGenerated(@event);
-            ((IAggregateRoot)this).ApplyEvent(@event);
+            ((IEventSourcedEntity)this).ApplyEvent(@event);
             RaisedEvents.Add(@event);
         }
 

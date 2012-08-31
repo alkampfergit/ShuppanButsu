@@ -20,7 +20,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
             _factory = factory;
         }
 
-        private Dictionary<String, AggregateRoot> _idMap = new Dictionary<String, AggregateRoot>();
+        private Dictionary<String, EventSourcingBasedEntity> _idMap = new Dictionary<String, EventSourcingBasedEntity>();
 
         /// <summary>
         /// Return an aggregate root with the id
@@ -28,7 +28,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public T GetById<T>(String id) where T : AggregateRoot, new()
+        public T GetById<T>(String id) where T : EventSourcingBasedEntity, new()
         {
             if (_idMap.ContainsKey(id)) return (T) _idMap[id];
 
@@ -37,14 +37,14 @@ namespace ShuppanButsu.Infrastructure.Concrete
             var commits = _eventStore.GetByCorrelationId(id.ToString());
             foreach (var commit in commits)
             {
-                ((IAggregateRoot)aggregateRoot).ApplyEvent((DomainEvent)commit.Payload);
+                ((IEventSourcedEntity)aggregateRoot).ApplyEvent((DomainEvent)commit.Payload);
             }
 
             _idMap.Add(id, aggregateRoot);
             return aggregateRoot;
         }
 
-        public void Save(AggregateRoot ar) 
+        public void Save(EventSourcingBasedEntity ar) 
         {
             if (_idMap.ContainsKey(ar.Id)) throw new ArgumentException("Aggregate root with the same id was already associated to this UnitOfWork");
             _idMap.Add(ar.Id, ar);
@@ -63,7 +63,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
             foreach (var mapEntry in _idMap)
             {
                 eventsToStore.AddRange(
-                    ((IAggregateRoot)mapEntry.Value).GetRaisedEvents()
+                    ((IEventSourcedEntity)mapEntry.Value).GetRaisedEvents()
                     .Select(evt => new Event(evt, mapEntry.Key.ToString(), evt.Timestamp.Ticks)));
             }
             
@@ -72,7 +72,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
 
             foreach (var ar in _idMap.Values)
             {
-                ((IAggregateRoot)ar).ClearRaisedEvents();
+                ((IEventSourcedEntity)ar).ClearRaisedEvents();
             }
 
             var orderedEvents = eventsToStore.OrderBy(e => e.Ticks).Select(e => (DomainEvent) e.Payload);

@@ -25,28 +25,28 @@ namespace ShuppanButsu
 
         static AggregateRootFactory() 
         {
-            interceptorSetter = typeof(AggregateRoot)
+            interceptorSetter = typeof(EventSourcingBasedEntity)
                 .GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
                 .Single(p => typeof(IDomainEventInterceptor).IsAssignableFrom(p.PropertyType))
                 .DelegateForSetPropertyValue();
 
-            raiseEventInvoker = typeof(AggregateRoot)
+            raiseEventInvoker = typeof(EventSourcingBasedEntity)
                 .GetMethod("RaiseEvent", BindingFlags.NonPublic | BindingFlags.Instance)
                 .DelegateForCallMethod();
         }
 
 
-        public T Create<T>() where T : AggregateRoot 
+        public T Create<T>() where T : EventSourcingBasedEntity 
         {
             T instance = (T) Activator.CreateInstance(typeof(T), true); 
             interceptorSetter.Invoke(instance, DomainEventInterceptor);
             //AR should not generate events on constructors, but if someone designed a class that raise events on the construcotr
             //those should be removed because they are not useful.
-            ((IAggregateRoot)instance).ClearRaisedEvents();
+            ((IEventSourcedEntity)instance).ClearRaisedEvents();
             return instance;
         }
 
-        public T Create<T>(AggregateRootCreationDomainEvent creationEvent) where T : AggregateRoot
+        public T Create<T>(AggregateRootCreationDomainEvent creationEvent) where T : EventSourcingBasedEntity
         {
             T instance = Create<T>();
             raiseEventInvoker.Invoke(instance, creationEvent);

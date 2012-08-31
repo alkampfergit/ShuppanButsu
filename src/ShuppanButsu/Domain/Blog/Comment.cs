@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShuppanButsu.Domain.Blog
 {
-    public class Comment : AggregateRoot
+    public class Comment : EventSourcingBasedEntity
     {
     }
 }

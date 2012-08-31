@@ -57,7 +57,7 @@ namespace ShuppanButsu.Tests
 
     public static class InterceptDomainEventsHelperExtensionMethods 
     {
-        public static T CreateAggregate<T>(this BaseTestFixtureWithHelper fixture) where T : AggregateRoot
+        public static T CreateAggregate<T>(this BaseTestFixtureWithHelper fixture) where T : EventSourcingBasedEntity
         {
             return fixture.GetFromTestContext<AggregateRootFactory>(InterceptDomainEventsHelper.FactoryKey).Create<T>();
         }

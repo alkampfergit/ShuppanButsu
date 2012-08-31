@@ -27,7 +27,7 @@ namespace ShuppanButsu.Tests.Domain
                 IntProperty = 42,
                 StringProperty = "42",
             };
-            ((IAggregateRoot)sut).ApplyEvent(evt);
+            ((IEventSourcedEntity)sut).ApplyEvent(evt);
             sut.IntProperty.Should().Be.EqualTo(42);
             sut.StringProperty.Should().Be.EqualTo("42");
             sut.Id.Should().Be.EqualTo(evt.Id);
@@ -37,7 +37,7 @@ namespace ShuppanButsu.Tests.Domain
         public void Verify_generation_of_events() 
         {
             TestClassForAggregateRoot sut = new TestClassForAggregateRoot();
-            var evts = ((IAggregateRoot)sut).GetRaisedEvents();
+            var evts = ((IEventSourcedEntity)sut).GetRaisedEvents();
             evts.Should().Have.Count.EqualTo(1);
             evts.Single().Should().Be.OfType<TestClassForAggregateRootCreated>();
         }
@@ -46,8 +46,8 @@ namespace ShuppanButsu.Tests.Domain
         public void verify_clear_of_events() 
         {
             TestClassForAggregateRoot sut = new TestClassForAggregateRoot();
-            ((IAggregateRoot)sut).ClearRaisedEvents();
-            var evts = ((IAggregateRoot)sut).GetRaisedEvents();
+            ((IEventSourcedEntity)sut).ClearRaisedEvents();
+            var evts = ((IEventSourcedEntity)sut).GetRaisedEvents();
             evts.Should().Have.Count.EqualTo(0);
         }
     }

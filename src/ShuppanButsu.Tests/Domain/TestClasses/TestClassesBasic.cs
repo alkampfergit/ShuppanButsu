@@ -8,7 +8,7 @@ using ShuppanButsu.Infrastructure;
 
 namespace ShuppanButsu.Tests.Domain.TestClasses
 {
-    class TestClassForAggregateRoot : AggregateRoot
+    class TestClassForAggregateRoot : EventSourcingBasedEntity
     {
 
         public Int32 IntProperty;

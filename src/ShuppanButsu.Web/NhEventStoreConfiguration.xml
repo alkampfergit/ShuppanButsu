@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+  <session-factory>
+    <property name="connection.provider">
+      NHibernate.Connection.DriverConnectionProvider
+    </property>
+    <property name="connection.driver_class">
+      NHibernate.Driver.SqlClientDriver
+    </property>
+    <property name="connection.connection_string">
+      Data Source=localhost;Initial Catalog=ShuppanButsu;User=sa;pwd=sql
+    </property>
+    <property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
+    <property name="generate_statistics">true</property>
+    <property name="show_sql">False</property>
+    <property name="format_sql">True</property>
+  </session-factory>
+</hibernate-configuration>

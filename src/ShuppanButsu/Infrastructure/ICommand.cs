@@ -18,5 +18,9 @@ namespace ShuppanButsu.Infrastructure
     public abstract class CommandBase : ICommand
     {
         public Guid Id { get; protected set; }
+
+        public CommandBase() {
+            Id = Guid.NewGuid();
+        }
     }
 }

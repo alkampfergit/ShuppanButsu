@@ -7,7 +7,7 @@ using ShuppanButsu.Infrastructure;
 
 namespace ShuppanButsu.Domain
 {
-    public interface IAggregateRoot
+    public interface IEventSourcedEntity
     {
         String Id { get; }
 

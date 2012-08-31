@@ -38,7 +38,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
                 _executingThread = new Thread(DispatchEventCore);
                 _executingThread.Start();
             }
-        }
+        } 
 
         public void Stop()
         {
@@ -82,7 +82,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
             }
             catch (Exception ex)
             {
-
+                _logger.Error("exception during command execution", ex);
                 return false;
             }
         }

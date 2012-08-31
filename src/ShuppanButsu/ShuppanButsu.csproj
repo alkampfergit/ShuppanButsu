@@ -101,21 +101,23 @@
   <ItemGroup>
     <Compile Include="AggregateRootFactory.cs" />
     <Compile Include="Bootstrap.cs" />
+    <Compile Include="CommandsExecutors\Posts\PostBaseExecutors.cs" />
+    <Compile Include="Commands\Posts\CreatePostCommand.cs" />
     <Compile Include="Domain\Blog\CategoryManager.cs" />
     <Compile Include="Domain\Blog\CategoryManagerEvents\CategoryAdded.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagers\PostPageManager.cs" />
     <Compile Include="Domain\Blog\Handlers\PostManagementUtilities.cs" />
+    <Compile Include="Infrastructure\BaseClasses\BaseUnitOfWorkExecutor.cs" />
     <Compile Include="Infrastructure\BaseHandler.cs" />
     <Compile Include="ShuppanButsuConfiguration.cs" />
-    <Compile Include="Domain\AggregateRoot.cs" />
+    <Compile Include="Domain\EventSourcingBasedEntity.cs" />
     <Compile Include="Domain\Blog\Comment.cs" />
     <Compile Include="Domain\Blog\Handlers\PageManagers\HomePageManager.cs" />
     <Compile Include="Domain\Blog\Post.cs" />
     <Compile Include="Domain\Blog\PostEvents\PostCreated.cs" />
-    <Compile Include="Domain\IAggregateRoot.cs" />
+    <Compile Include="Domain\IEventSourcedEntity.cs" />
     <Compile Include="Infrastructure\BoundedContext.cs" />
     <Compile Include="Infrastructure\Concrete\CastleFasterflectCatalog.cs" />
-    <Compile Include="Infrastructure\Command.cs" />
     <Compile Include="Infrastructure\Concrete\CommandDispatcher.cs" />
     <Compile Include="Infrastructure\Concrete\DomainEventDispatcher.cs" />
     <Compile Include="Infrastructure\Concrete\EventsStore\SqLiteEventsStore.cs" />
@@ -141,10 +143,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="x86\SQLite.Interop.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
