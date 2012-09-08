@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core;
 using Castle.Core.Logging;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Infrastructure.Concrete
 {
@@ -48,7 +49,18 @@ namespace ShuppanButsu.Infrastructure.Concrete
         {
             foreach (DomainEvent @event in _dispatchQueue.GetConsumingEnumerable())
             {
-                InnerDispatch(@event);
+                _logger.SetOpType("event", @event.GetType().FullName + " timestamp:" + @event.Timestamp);
+                try
+                {
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatching:" + @event.GetType().FullName);
+                    InnerDispatch(@event);
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatched:" + @event.GetType().FullName);
+                }
+                finally
+                {
+                    _logger.RemoveOpType();
+                }
+                
             }
         }
 
@@ -67,7 +79,9 @@ namespace ShuppanButsu.Infrastructure.Concrete
             {
                 try
                 {
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatching event " + @event.GetType() + " to the handler " + executor.DefiningType + "." + executor.Invoker.Method.Name);
                     executor.Invoke(@event);
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatched event " + @event.GetType() + " to the handler " + executor.DefiningType + "." + executor.Invoker.Method.Name);
                 }
                 catch (OutOfMemoryException)
                 {

@@ -26,16 +26,24 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             {
                 //already reached maximum post number in home page, this post is not older than the other
                 //nothing to add in the home page.
+                Logger.Info("New post is older than maximum number of post to be stored in home page, it will be ignored");
                 return;
             }
     
             HtmlDocument templateDocument = new HtmlDocument();
             String BlogDirectory = Path.Combine(Configuration.BaseGenerationDirectory, evt.BlogName);
-           
-            if ( !String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(BlogDirectory)) Directory.CreateDirectory(BlogDirectory);
+
+            if (!String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(BlogDirectory))
+            {
+                if (Logger.IsDebugEnabled) Logger.Debug("Creating output folder for pages " + BlogDirectory);
+                Directory.CreateDirectory(BlogDirectory);
+                if (Logger.IsDebugEnabled) Logger.Debug("Created output folder for pages " + BlogDirectory);
+            }
             String templateDirectory = Path.Combine(Configuration.TemplateDirectory, BlogDirectory);
-            if (!String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(templateDirectory)) { 
+            if (!String.IsNullOrEmpty(BlogDirectory) && !Directory.Exists(templateDirectory)) 
+            { 
                 //Specific template for this blog does not exists, simple use the standard template
+                if (Logger.IsDebugEnabled) Logger.Debug("Template directory " + templateDirectory + " does not exist, default directory " + Configuration.TemplateDirectory + " will be used");
                 templateDirectory = Configuration.TemplateDirectory;
             }
 
@@ -43,7 +51,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
             FileInfo finfo = new FileInfo(templateFileName);
             if (!finfo.Exists) 
             {
-                Logger.Fatal("Template file missing: " + finfo.FullName);
+                Logger.Fatal("Template file missing: " + finfo.FullName + " unable to create home page");
                 return;
             }
 
@@ -110,7 +118,7 @@ namespace ShuppanButsu.Domain.Blog.Handlers.PageManagers
                 }
                 else 
                 {
-                    Logger.Warn("Post id " + postToRemove.Id + " element was not found in the home page");
+                    if (Logger.IsWarnEnabled) Logger.Warn("Post id " + postToRemove.Id + " element was not found in the home page");
                 }
                 
             }

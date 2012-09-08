@@ -15,7 +15,12 @@ namespace ShuppanButsu.Infrastructure
         /// <summary>
         /// Reference to a logger
         /// </summary>
-        public ILogger Logger { get; set; }
+        public ILogger Logger {
+            get { return _logger ?? (_logger = NullLogger.Instance); }
+            set { _logger = value; }
+        }
+        private ILogger _logger;
+
 
         /// <summary>
         /// Reference to the configuration of ShuppanButsu engine.

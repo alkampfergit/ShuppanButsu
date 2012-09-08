@@ -53,11 +53,9 @@ namespace ShuppanButsu.Infrastructure.Concrete
                 _logger.SetOpType("command", command.Id.ToString("N"));
                 try
                 {
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatching Command id: " + command.Id.ToString("N"), null, command);
                     InnerExecuteCommand(command);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error("CommandError: " + ex.Message, ex);
+                    if (_logger.IsDebugEnabled) _logger.Debug("Dispatched Command id: " + command.Id.ToString("N"), null, command);
                 }
                 finally 
                 {
@@ -87,6 +85,7 @@ namespace ShuppanButsu.Infrastructure.Concrete
 
             try
             {
+                if (_logger.IsDebugEnabled) _logger.Debug("Found command executor " + executor.DefiningType.FullName + "." + executor.Invoker.Method.Name);
                 executor.Invoke(command);
                 return true;
             }
