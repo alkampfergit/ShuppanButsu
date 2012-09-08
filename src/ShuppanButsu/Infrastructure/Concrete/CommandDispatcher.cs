@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core;
 using Castle.Core.Logging;
+using ShuppanButsu.Utils;
 
 namespace ShuppanButsu.Infrastructure.Concrete
 {
@@ -49,7 +50,20 @@ namespace ShuppanButsu.Infrastructure.Concrete
         {
             foreach (ICommand command in _commandQueue.GetConsumingEnumerable())
             {
-                InnerExecuteCommand(command);
+                _logger.SetOpType("command", command.Id.ToString("N"));
+                try
+                {
+                    InnerExecuteCommand(command);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("CommandError: " + ex.Message, ex);
+                }
+                finally 
+                {
+                    _logger.RemoveOpType();
+                }
+
             }
         }
 
