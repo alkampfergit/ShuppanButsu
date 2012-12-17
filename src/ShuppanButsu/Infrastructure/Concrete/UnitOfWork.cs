@@ -70,11 +70,13 @@ namespace ShuppanButsu.Infrastructure.Concrete
             //now save everything with a single commit id.
             _eventStore.PersistEvents(eventsToStore, commitId);
 
+            //clear event raised by the aggregate roots.
             foreach (var ar in _idMap.Values)
             {
                 ((IEventSourcedEntity)ar).ClearRaisedEvents();
             }
 
+            //for each event dispatch it.
             var orderedEvents = eventsToStore.OrderBy(e => e.Ticks).Select(e => (DomainEvent) e.Payload);
             foreach (var @event in orderedEvents)
             {
